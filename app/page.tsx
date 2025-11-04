@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, Suspense } from 'react';
+import { Search, Mic } from 'lucide-react';
 import type { Article } from '@/lib/api';
 import { useScope } from '@/lib/hooks/useLawType';
 import { useSearch } from '@/lib/hooks/useSearch';
@@ -13,7 +14,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArticleList } from '@/components/ArticleList';
 import { EmptyState } from '@/components/EmptyState';
 import { ArticleModal } from '@/components/ArticleModal';
-import { getTheme, getScopeName } from '@/lib/constants/theme';
+import { getTheme, getScopeName, GRADIENTS } from '@/lib/constants/theme';
 
 function HomeContent() {
   const { scope, changeScope } = useScope();
@@ -35,11 +36,6 @@ function HomeContent() {
           changeScope(newScope);
           setIsMobileOpen(false);
         }}
-        query={query}
-        onQueryChange={setQuery}
-        onSearch={handleSearch}
-        isListening={isListening}
-        onVoiceSearch={startVoiceSearch}
         isMobileOpen={isMobileOpen}
         onMobileToggle={() => setIsMobileOpen(!isMobileOpen)}
       />
@@ -55,6 +51,52 @@ function HomeContent() {
             <p className="text-sm opacity-70" style={{ color: theme.textColor }}>
               정확하고 빠른 법률 검색 서비스
             </p>
+          </div>
+
+          {/* 검색바 */}
+          <div className="mb-8">
+            <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <Search className="w-6 h-6 opacity-50" style={{ color: theme.textColor }} />
+                </div>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="조문 번호나 키워드를 입력하세요..."
+                  className="w-full pl-14 pr-14 py-4 text-lg rounded-2xl border-2 focus:outline-none focus:ring-4 transition-all shadow-md"
+                  style={{
+                    backgroundColor: 'white',
+                    borderColor: theme.borderColor,
+                  }}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="flex gap-3 mt-4 max-w-md mx-auto">
+                <button
+                  type="button"
+                  onClick={startVoiceSearch}
+                  className="flex-1 py-3 px-6 rounded-xl transition-all hover:scale-105 active:scale-95 font-semibold shadow-md flex items-center justify-center gap-2"
+                  style={{
+                    background: isListening ? GRADIENTS.danger : theme.gradient,
+                    color: 'white',
+                  }}
+                  aria-label="음성 검색"
+                >
+                  <Mic className="w-5 h-5" />
+                  <span>음성 검색</span>
+                </button>
+                <button
+                  type="submit"
+                  className="flex-[2] py-3 px-6 rounded-xl text-white font-semibold transition-all hover:scale-105 active:scale-95 shadow-md"
+                  style={{ background: theme.gradient }}
+                >
+                  검색
+                </button>
+              </div>
+            </form>
           </div>
 
           {/* 검색 정보 */}
@@ -92,7 +134,7 @@ function HomeContent() {
                 {getScopeName(scope)} 법률을 검색해보세요
               </p>
               <p className="text-sm opacity-70" style={{ color: theme.textColor }}>
-                좌측 사이드바에서 검색어를 입력하거나 음성으로 검색할 수 있습니다
+                상단 검색바에서 조문 번호나 키워드를 입력하거나 음성으로 검색할 수 있습니다
               </p>
             </div>
           )}
