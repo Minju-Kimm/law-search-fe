@@ -42,7 +42,7 @@ export function Sidebar({
       {/* 사이드바 */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-80 z-40
+          fixed top-0 left-0 h-screen w-72 sm:w-80 z-40
           transition-transform duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static
@@ -50,7 +50,7 @@ export function Sidebar({
         `}
         style={{ background: theme.bgColor }}
       >
-        <div className="h-full flex flex-col p-6">
+        <div className="h-full flex flex-col p-5 sm:p-6">
           {/* 닫기 버튼 (모바일) */}
           <button
             onClick={onMobileToggle}
@@ -61,24 +61,21 @@ export function Sidebar({
           </button>
 
           {/* 로고 영역 */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold mb-2" style={{ color: theme.textColor }}>
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2" style={{ color: theme.textColor }}>
               법률 검색
             </h1>
-            <p className="text-sm opacity-70" style={{ color: theme.textColor }}>
+            <p className="text-xs sm:text-sm opacity-70" style={{ color: theme.textColor }}>
               빠르고 정확한 조문 찾기
             </p>
           </div>
 
           {/* 법 범위 선택: 전체/민법/형법 */}
           <div>
-            <label className="text-sm font-semibold mb-3 block" style={{ color: theme.textColor }}>
-              법 범위 선택
-            </label>
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => onScopeChange('all')}
-                className={`py-3 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   scope === 'all' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
                 }`}
                 style={{
@@ -91,7 +88,7 @@ export function Sidebar({
               </button>
               <button
                 onClick={() => onScopeChange('civil')}
-                className={`py-3 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   scope === 'civil' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
                 }`}
                 style={{
@@ -104,7 +101,7 @@ export function Sidebar({
               </button>
               <button
                 onClick={() => onScopeChange('criminal')}
-                className={`py-3 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   scope === 'criminal' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
                 }`}
                 style={{

@@ -42,55 +42,56 @@ function HomeContent() {
 
       {/* 메인 콘텐츠 */}
       <main className="flex-1 lg:ml-0 overflow-auto">
-        <div className="max-w-5xl mx-auto px-6 py-8 lg:py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
           {/* 헤더 */}
-          <div className="mb-8 text-center lg:text-left">
-            <h1 className="text-3xl lg:text-4xl font-bold mb-2" style={{ color: theme.textColor }}>
+          <div className="mb-6 sm:mb-8 text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: theme.textColor }}>
               {getScopeName(scope)} 법률 검색
             </h1>
-            <p className="text-sm opacity-70" style={{ color: theme.textColor }}>
+            <p className="text-xs sm:text-sm opacity-70" style={{ color: theme.textColor }}>
               정확하고 빠른 법률 검색 서비스
             </p>
           </div>
 
           {/* 검색바 */}
           <div className="mb-8">
-            <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <Search className="w-6 h-6 opacity-50" style={{ color: theme.textColor }} />
+            <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                <div className="relative flex-1">
+                  <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <Search className="w-5 h-5 sm:w-6 sm:h-6 opacity-50" style={{ color: theme.textColor }} />
+                  </div>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="조문 번호나 키워드..."
+                    className="w-full pl-12 sm:pl-14 pr-12 sm:pr-14 py-3 sm:py-4 text-base sm:text-lg rounded-2xl border-2 focus:outline-none focus:ring-2 transition-all shadow-md"
+                    style={{
+                      backgroundColor: 'white',
+                      borderColor: theme.borderColor,
+                    }}
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                  {/* 음성 검색 버튼 (검색바 내부 우측) */}
+                  <button
+                    type="button"
+                    onClick={startVoiceSearch}
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-lg transition-all hover:scale-110 active:scale-95"
+                    style={{
+                      background: isListening ? GRADIENTS.danger : theme.gradient,
+                      color: 'white',
+                    }}
+                    aria-label="음성 검색"
+                  >
+                    <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
                 </div>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="조문 번호나 키워드를 입력하세요..."
-                  className="w-full pl-14 pr-14 py-4 text-lg rounded-2xl border-2 focus:outline-none focus:ring-4 transition-all shadow-md"
-                  style={{
-                    backgroundColor: 'white',
-                    borderColor: theme.borderColor,
-                  }}
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-              </div>
-              <div className="flex gap-3 mt-4 max-w-md mx-auto">
-                <button
-                  type="button"
-                  onClick={startVoiceSearch}
-                  className="flex-1 py-3 px-6 rounded-xl transition-all hover:scale-105 active:scale-95 font-semibold shadow-md flex items-center justify-center gap-2"
-                  style={{
-                    background: isListening ? GRADIENTS.danger : theme.gradient,
-                    color: 'white',
-                  }}
-                  aria-label="음성 검색"
-                >
-                  <Mic className="w-5 h-5" />
-                  <span>음성 검색</span>
-                </button>
+                {/* 검색 버튼 (검색바 우측) */}
                 <button
                   type="submit"
-                  className="flex-[2] py-3 px-6 rounded-xl text-white font-semibold transition-all hover:scale-105 active:scale-95 shadow-md"
+                  className="px-6 sm:px-8 py-3 sm:py-4 rounded-2xl text-white font-semibold transition-all hover:scale-105 active:scale-95 shadow-md whitespace-nowrap"
                   style={{ background: theme.gradient }}
                 >
                   검색
