@@ -1,27 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import type { LawType } from '@/lib/api';
+import type { Scope } from '@/lib/api';
 
-export function useLawType() {
+export function useScope() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [lawType, setLawType] = useState<LawType>('civil');
+  const [scope, setScope] = useState<Scope>('all');
 
-  // URL에서 법전 타입 읽기
+  // URL에서 scope 읽기
   useEffect(() => {
-    const lawParam = searchParams.get('law');
-    if (lawParam === 'criminal' || lawParam === 'civil') {
-      setLawType(lawParam);
+    const scopeParam = searchParams.get('scope');
+    if (scopeParam === 'all' || scopeParam === 'civil' || scopeParam === 'criminal') {
+      setScope(scopeParam);
     }
   }, [searchParams]);
 
-  // 법전 타입 변경 시 URL 업데이트
-  const changeLawType = (newLaw: LawType) => {
-    setLawType(newLaw);
+  // scope 변경 시 URL 업데이트
+  const changeScope = (newScope: Scope) => {
+    setScope(newScope);
     const params = new URLSearchParams(searchParams.toString());
-    params.set('law', newLaw);
+    params.set('scope', newScope);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  return { lawType, changeLawType };
+  return { scope, changeScope };
 }

@@ -1,6 +1,7 @@
 // lib/api.ts
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8080';
 
+export type Scope = 'all' | 'civil' | 'criminal';
 export type LawType = 'civil' | 'criminal';
 
 export interface Article {
@@ -20,7 +21,9 @@ export interface SearchResponse {
   processingTimeMs?: number;
   limit: number;
   offset: number;
-  estimatedTotalHits?: number; // backend total 매핑
+  count?: number;              // 1순위: 백엔드 count 필드
+  total?: number;              // 2순위: 백엔드 total 필드
+  estimatedTotalHits?: number; // 3순위: 백엔드 estimatedTotalHits 필드
   hits: Article[];
 }
 
@@ -69,7 +72,9 @@ function normalizeSearch(json: any): SearchResponse {
         : undefined,
     limit: toNum(json.limit ?? 20),
     offset: toNum(json.offset ?? 0),
-    estimatedTotalHits: toNum(json.estimatedTotalHits ?? json.total, undefined as any),
+    count: typeof json.count === 'number' ? json.count : undefined,
+    total: typeof json.total === 'number' ? json.total : undefined,
+    estimatedTotalHits: typeof json.estimatedTotalHits === 'number' ? json.estimatedTotalHits : undefined,
     hits: hitsRaw.map(normalizeArticle),
   };
 }
@@ -92,8 +97,13 @@ export async function checkHealth(): Promise<HealthResponse> {
   return ok<HealthResponse>(r);
 }
 
-export async function search(q: string, law: LawType = 'civil', limit = 20): Promise<SearchResponse> {
-  const url = `${BASE_URL}/search?q=${encodeURIComponent(q)}&law=${law}&limit=${limit}`;
+export async function search(
+  q: string,
+  scope: Scope = 'all',
+  limit = 20,
+  offset = 0
+): Promise<SearchResponse> {
+  const url = `${BASE_URL}/search?scope=${scope}&q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`;
   const r = await fetch(url, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeSearch(raw);

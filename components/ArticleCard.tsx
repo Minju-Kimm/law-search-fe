@@ -1,6 +1,6 @@
 import { Volume2 } from 'lucide-react';
-import type { Article, LawType } from '@/lib/api';
-import { getTheme } from '@/lib/constants/theme';
+import type { Article } from '@/lib/api';
+import { LAW_BADGES } from '@/lib/constants/theme';
 import { SEARCH_CONFIG } from '@/lib/constants/search';
 
 interface ArticleCardProps {
@@ -24,16 +24,15 @@ export function ArticleCard({
       ? `${article.body.slice(0, SEARCH_CONFIG.previewLength)}...`
       : article.body;
 
-  // lawCode를 기반으로 법전 타입 결정
-  const lawType: LawType = article.lawCode === 'CRIMINAL_CODE' ? 'criminal' : 'civil';
-  const theme = getTheme(lawType);
+  // lawCode 기반 배지 설정
+  const badge = LAW_BADGES[article.lawCode];
 
   return (
     <div
       className="rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-[1.01] border-2"
       style={{
         backgroundColor: 'white',
-        borderColor: isExactMatch ? '#fbbf24' : theme.borderColor,
+        borderColor: isExactMatch ? '#fbbf24' : 'rgba(229, 231, 235, 0.8)',
       }}
       onClick={onClick}
     >
@@ -45,17 +44,29 @@ export function ArticleCard({
                 정확 일치
               </span>
             )}
+            {/* 법 종류 배지 */}
             <span
-              className="px-4 py-1.5 rounded-full text-white font-bold shadow-md"
-              style={{ background: theme.gradient }}
+              className="px-3 py-1 rounded-lg text-sm font-bold"
+              style={{
+                backgroundColor: badge.bgColor,
+                color: badge.textColor,
+              }}
             >
+              {badge.label}
+            </span>
+            {/* 제X조 타이틀 */}
+            <h3 className="font-bold text-lg text-gray-800">
               제{article.articleNo}조
               {article.articleSubNo > 0 ? `의${article.articleSubNo}` : ''}
-            </span>
-            <h3 className="font-bold text-lg text-gray-800">
-              {article.heading || (article.joCode ? `(${article.joCode})` : '')}
             </h3>
           </div>
+
+          {/* 조문 제목 */}
+          {article.heading && (
+            <div className="mb-2 text-base font-semibold text-gray-700">
+              {article.heading}
+            </div>
+          )}
 
           <p className="text-gray-700 leading-relaxed">{bodyPreview || ''}</p>
 
@@ -74,7 +85,9 @@ export function ArticleCard({
             onSpeak(article);
           }}
           className="p-3 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-md flex-shrink-0"
-          style={{ background: theme.accentGradient }}
+          style={{
+            backgroundColor: badge.textColor,
+          }}
           aria-label="조문 읽어주기"
         >
           <Volume2 className="w-5 h-5 text-white" />
