@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { search as apiSearch, type SearchResponse } from '@/lib/api';
+import { search as apiSearch, type SearchResponse, type LawType } from '@/lib/api';
 import { SEARCH_CONFIG, SEARCH_MESSAGES } from '@/lib/constants/search';
 
-export function useSearch() {
+export function useSearch(lawType: LawType) {
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export function useSearch() {
         clearTimeout(timerRef.current);
       }
     };
-  }, [query]);
+  }, [query, lawType]);
 
   const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
@@ -40,7 +40,7 @@ export function useSearch() {
     setError(null);
 
     try {
-      const result = await apiSearch(searchQuery, SEARCH_CONFIG.defaultLimit);
+      const result = await apiSearch(searchQuery, lawType, SEARCH_CONFIG.defaultLimit);
       setSearchResult(result);
     } catch (err) {
       console.error('검색 오류:', err);
