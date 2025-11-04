@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    /* 그라디언트 색상 */
+    --gradient-primary-start: #667eea;
+    --gradient-primary-end: #764ba2;
+    --gradient-accent-start: #fbbf24;
+    --gradient-accent-end: #f59e0b;
+
+    /* 배경 */
+    --bg-overlay: rgba(255, 255, 255, 0.96);
+    --bg-overlay-dark: rgba(0, 0, 0, 0.7);
+    --bg-glass: rgba(255, 255, 255, 0.10);
+
+    /* 테두리 */
+    --border-light: rgba(255, 255, 255, 0.30);
+    --border-highlight: rgba(251, 191, 36, 0.6);
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  }
+}
+
 /* floating bg animation */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
