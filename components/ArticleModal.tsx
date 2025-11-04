@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
-import type { Article } from '@/lib/api';
-import { GRADIENTS, COLORS } from '@/lib/constants/theme';
+import type { Article, LawType } from '@/lib/api';
+import { getTheme, COLORS } from '@/lib/constants/theme';
 
 interface ArticleModalProps {
   article: Article;
@@ -9,6 +9,9 @@ interface ArticleModalProps {
 }
 
 export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
+  const lawType: LawType = article.lawCode === 'CRIMINAL_CODE' ? 'criminal' : 'civil';
+  const theme = getTheme(lawType);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-6"
@@ -26,7 +29,7 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
           <div>
             <span
               className="inline-block px-5 py-2 rounded-full text-white font-bold shadow-lg mb-3"
-              style={{ background: GRADIENTS.primary }}
+              style={{ background: theme.gradient }}
             >
               제{article.articleNo}조
               {article.articleSubNo > 0 ? `의${article.articleSubNo}` : ''}
@@ -58,9 +61,10 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
               {article.clauses.map((clause, idx) => (
                 <div
                   key={`clause-${idx}`}
-                  className="flex gap-3 p-3 bg-gray-50 rounded-xl"
+                  className="flex gap-3 p-3 rounded-xl"
+                  style={{ backgroundColor: theme.lightBg }}
                 >
-                  <span className="font-bold text-gray-600">{clause.no}</span>
+                  <span className="font-bold" style={{ color: theme.textColor }}>{clause.no}</span>
                   <span className="text-gray-800">{clause.text}</span>
                 </div>
               ))}
@@ -72,7 +76,7 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
           <button
             onClick={() => onSpeak(article)}
             className="flex-1 px-6 py-3 rounded-xl text-white font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg"
-            style={{ background: GRADIENTS.primary }}
+            style={{ background: theme.gradient }}
           >
             🔊 읽어주기
           </button>

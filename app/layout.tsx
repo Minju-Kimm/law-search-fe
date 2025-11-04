@@ -6,8 +6,8 @@ import "@fontsource/pretendard/700.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "민법 조문 검색",
-  description: "빠르고 정확한 법률 검색",
+  title: "법률 조문 검색 - 민법 & 형법",
+  description: "빠르고 정확한 민법 & 형법 조문 검색 서비스",
   icons: {
     icon: '/favicon.ico',
   },

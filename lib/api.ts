@@ -1,9 +1,11 @@
 // lib/api.ts
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8080';
 
+export type LawType = 'civil' | 'criminal';
+
 export interface Article {
   id: string;               // 백엔드에 없으면 joCode로 대체
-  lawCode: 'CIVIL_CODE';
+  lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE';
   articleNo: number;        // article_no
   articleSubNo: number;     // article_sub_no
   joCode: string;           // jo_code
@@ -41,7 +43,7 @@ function toNum(v: any, def = 0): number {
 function normalizeArticle(a: any): Article {
   return {
     id: toStr(a.id ?? a._id ?? a.jo_code ?? a.article_no),
-    lawCode: 'CIVIL_CODE',
+    lawCode: (a.lawCode ?? a.law_code ?? 'CIVIL_CODE') as 'CIVIL_CODE' | 'CRIMINAL_CODE',
     articleNo: toNum(a.articleNo ?? a.article_no),
     articleSubNo: toNum(a.articleSubNo ?? a.article_sub_no),
     joCode: toStr(a.joCode ?? a.jo_code),
@@ -90,21 +92,21 @@ export async function checkHealth(): Promise<HealthResponse> {
   return ok<HealthResponse>(r);
 }
 
-export async function search(q: string, limit = 20): Promise<SearchResponse> {
-  const url = `${BASE_URL}/search?q=${encodeURIComponent(q)}&limit=${limit}`;
+export async function search(q: string, law: LawType = 'civil', limit = 20): Promise<SearchResponse> {
+  const url = `${BASE_URL}/search?q=${encodeURIComponent(q)}&law=${law}&limit=${limit}`;
   const r = await fetch(url, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeSearch(raw);
 }
 
-export async function getArticleByJoCode(joCode: string): Promise<Article> {
-  const r = await fetch(`${BASE_URL}/articles/by-jo/${joCode}`, { cache: 'no-store' });
+export async function getArticleByJoCode(joCode: string, law: LawType = 'civil'): Promise<Article> {
+  const r = await fetch(`${BASE_URL}/articles/by-jo/${joCode}?law=${law}`, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeArticle(raw);
 }
 
-export async function getArticleByNumber(articleNo: number, subNo = 0): Promise<Article> {
-  const qs = subNo > 0 ? `?sub_no=${subNo}` : '';
+export async function getArticleByNumber(articleNo: number, law: LawType = 'civil', subNo = 0): Promise<Article> {
+  const qs = subNo > 0 ? `?law=${law}&sub_no=${subNo}` : `?law=${law}`;
   const r = await fetch(`${BASE_URL}/articles/${articleNo}${qs}`, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeArticle(raw);

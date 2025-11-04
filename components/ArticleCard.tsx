@@ -1,6 +1,6 @@
 import { Volume2 } from 'lucide-react';
-import type { Article } from '@/lib/api';
-import { GRADIENTS, COLORS } from '@/lib/constants/theme';
+import type { Article, LawType } from '@/lib/api';
+import { getTheme } from '@/lib/constants/theme';
 import { SEARCH_CONFIG } from '@/lib/constants/search';
 
 interface ArticleCardProps {
@@ -24,13 +24,16 @@ export function ArticleCard({
       ? `${article.body.slice(0, SEARCH_CONFIG.previewLength)}...`
       : article.body;
 
+  // lawCode를 기반으로 법전 타입 결정
+  const lawType: LawType = article.lawCode === 'CRIMINAL_CODE' ? 'criminal' : 'civil';
+  const theme = getTheme(lawType);
+
   return (
     <div
-      className="backdrop-blur-lg rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all cursor-pointer hover:scale-[1.02] border"
+      className="rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer hover:scale-[1.01] border-2"
       style={{
-        background: isExactMatch ? 'rgba(255, 255, 255, 1)' : COLORS.overlay,
-        borderColor: isExactMatch ? COLORS.borderHighlight : COLORS.border,
-        borderWidth: isExactMatch ? '3px' : '1px',
+        backgroundColor: 'white',
+        borderColor: isExactMatch ? '#fbbf24' : theme.borderColor,
       }}
       onClick={onClick}
     >
@@ -43,8 +46,8 @@ export function ArticleCard({
               </span>
             )}
             <span
-              className="px-4 py-1.5 rounded-full text-white font-bold shadow-lg"
-              style={{ background: GRADIENTS.primary }}
+              className="px-4 py-1.5 rounded-full text-white font-bold shadow-md"
+              style={{ background: theme.gradient }}
             >
               제{article.articleNo}조
               {article.articleSubNo > 0 ? `의${article.articleSubNo}` : ''}
@@ -71,7 +74,7 @@ export function ArticleCard({
             onSpeak(article);
           }}
           className="p-3 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-md flex-shrink-0"
-          style={{ background: GRADIENTS.accent }}
+          style={{ background: theme.accentGradient }}
           aria-label="조문 읽어주기"
         >
           <Volume2 className="w-5 h-5 text-white" />

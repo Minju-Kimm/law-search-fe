@@ -17,14 +17,14 @@ export function ArticleList({
 
   return (
     <div className="space-y-4">
-      <p className="text-white font-semibold text-lg mb-5">
+      <p className="font-semibold text-lg mb-5 text-gray-700">
         총{' '}
-        <span className="text-2xl text-yellow-300">
+        <span className="text-2xl font-bold text-emerald-600">
           {searchResult?.estimatedTotalHits ?? results.length}
         </span>
         개의 조문
         {isNumericMode && (
-          <span className="ml-3 text-sm opacity-90">
+          <span className="ml-3 text-sm opacity-70">
             (정확한 조문 최상단 표시)
           </span>
         )}
