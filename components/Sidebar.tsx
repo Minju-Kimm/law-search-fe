@@ -1,12 +1,12 @@
 'use client';
 
 import { Search, Mic, X, Menu } from 'lucide-react';
-import type { LawType } from '@/lib/api';
-import { getTheme, getLawName, GRADIENTS } from '@/lib/constants/theme';
+import type { Scope } from '@/lib/api';
+import { getTheme, getScopeName, GRADIENTS, ALL_THEME, CIVIL_THEME, CRIMINAL_THEME } from '@/lib/constants/theme';
 
 interface SidebarProps {
-  lawType: LawType;
-  onLawTypeChange: (law: LawType) => void;
+  scope: Scope;
+  onScopeChange: (scope: Scope) => void;
   query: string;
   onQueryChange: (query: string) => void;
   onSearch: (e: React.FormEvent) => void;
@@ -17,8 +17,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  lawType,
-  onLawTypeChange,
+  scope,
+  onScopeChange,
   query,
   onQueryChange,
   onSearch,
@@ -27,7 +27,7 @@ export function Sidebar({
   isMobileOpen,
   onMobileToggle,
 }: SidebarProps) {
-  const theme = getTheme(lawType);
+  const theme = getTheme(scope);
 
   return (
     <>
@@ -80,36 +80,48 @@ export function Sidebar({
             </p>
           </div>
 
-          {/* 민법/형법 토글 */}
+          {/* 법 범위 선택: 전체/민법/형법 */}
           <div className="mb-6">
             <label className="text-sm font-semibold mb-2 block" style={{ color: theme.textColor }}>
-              법전 선택
+              법 범위 선택
             </label>
-            <div
-              className="flex rounded-full p-1"
-              style={{ backgroundColor: theme.lightBg }}
-            >
+            <div className="flex flex-col gap-2">
               <button
-                onClick={() => onLawTypeChange('civil')}
-                className={`flex-1 py-2.5 rounded-full font-semibold transition-all ${
-                  lawType === 'civil' ? 'shadow-md' : 'opacity-60 hover:opacity-80'
+                onClick={() => onScopeChange('all')}
+                className={`py-2.5 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  scope === 'all' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
                 }`}
                 style={{
-                  background: lawType === 'civil' ? getTheme('civil').gradient : 'transparent',
-                  color: lawType === 'civil' ? 'white' : theme.textColor,
+                  background: scope === 'all' ? ALL_THEME.gradient : ALL_THEME.lightBg,
+                  color: scope === 'all' ? 'white' : ALL_THEME.textColor,
                 }}
+                aria-pressed={scope === 'all'}
+              >
+                전체
+              </button>
+              <button
+                onClick={() => onScopeChange('civil')}
+                className={`py-2.5 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  scope === 'civil' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                }`}
+                style={{
+                  background: scope === 'civil' ? CIVIL_THEME.gradient : CIVIL_THEME.lightBg,
+                  color: scope === 'civil' ? 'white' : CIVIL_THEME.textColor,
+                }}
+                aria-pressed={scope === 'civil'}
               >
                 민법
               </button>
               <button
-                onClick={() => onLawTypeChange('criminal')}
-                className={`flex-1 py-2.5 rounded-full font-semibold transition-all ${
-                  lawType === 'criminal' ? 'shadow-md' : 'opacity-60 hover:opacity-80'
+                onClick={() => onScopeChange('criminal')}
+                className={`py-2.5 px-4 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  scope === 'criminal' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
                 }`}
                 style={{
-                  background: lawType === 'criminal' ? getTheme('criminal').gradient : 'transparent',
-                  color: lawType === 'criminal' ? 'white' : theme.textColor,
+                  background: scope === 'criminal' ? CRIMINAL_THEME.gradient : CRIMINAL_THEME.lightBg,
+                  color: scope === 'criminal' ? 'white' : CRIMINAL_THEME.textColor,
                 }}
+                aria-pressed={scope === 'criminal'}
               >
                 형법
               </button>
