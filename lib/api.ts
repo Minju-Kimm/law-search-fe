@@ -1,12 +1,12 @@
 // lib/api.ts
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8080';
 
-export type Scope = 'all' | 'civil' | 'criminal';
-export type LawType = 'civil' | 'criminal';
+export type Scope = 'all' | 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
+export type LawType = 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
 
 export interface Article {
   id: string;               // 백엔드에 없으면 joCode로 대체
-  lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE';
+  lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
   articleNo: number;        // article_no
   articleSubNo: number;     // article_sub_no
   joCode: string;           // jo_code
@@ -46,7 +46,7 @@ function toNum(v: any, def = 0): number {
 function normalizeArticle(a: any): Article {
   return {
     id: toStr(a.id ?? a._id ?? a.jo_code ?? a.article_no),
-    lawCode: (a.lawCode ?? a.law_code ?? 'CIVIL_CODE') as 'CIVIL_CODE' | 'CRIMINAL_CODE',
+    lawCode: (a.lawCode ?? a.law_code ?? 'CIVIL_CODE') as 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE',
     articleNo: toNum(a.articleNo ?? a.article_no),
     articleSubNo: toNum(a.articleSubNo ?? a.article_sub_no),
     joCode: toStr(a.joCode ?? a.jo_code),
