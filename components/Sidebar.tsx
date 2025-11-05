@@ -2,7 +2,7 @@
 
 import { X, Menu } from 'lucide-react';
 import type { Scope } from '@/lib/api';
-import { getTheme, ALL_THEME, CIVIL_THEME, CRIMINAL_THEME } from '@/lib/constants/theme';
+import { getTheme, ALL_THEME, CIVIL_THEME, CRIMINAL_THEME, CIVIL_PROCEDURE_THEME, CRIMINAL_PROCEDURE_THEME } from '@/lib/constants/theme';
 
 interface SidebarProps {
   scope: Scope;
@@ -21,15 +21,17 @@ export function Sidebar({
 
   return (
     <>
-      {/* 모바일 햄버거 버튼 */}
-      <button
-        onClick={onMobileToggle}
-        className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg transition-all hover:scale-105"
-        style={{ background: theme.gradient }}
-        aria-label="메뉴 열기"
-      >
-        <Menu className="w-6 h-6 text-white" />
-      </button>
+      {/* 모바일 햄버거 버튼 - 사이드바가 열리면 숨김 */}
+      {!isMobileOpen && (
+        <button
+          onClick={onMobileToggle}
+          className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg transition-all hover:scale-105"
+          style={{ background: theme.gradient }}
+          aria-label="메뉴 열기"
+        >
+          <Menu className="w-6 h-6 text-white" />
+        </button>
+      )}
 
       {/* 모바일 오버레이 */}
       {isMobileOpen && (
@@ -70,8 +72,8 @@ export function Sidebar({
             </p>
           </div>
 
-          {/* 법 범위 선택: 전체/민법/형법 */}
-          <div>
+          {/* 법 범위 선택: 전체/민법/형법/민사소송법/형사소송법 */}
+          <div className="flex-1 overflow-y-auto">
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => onScopeChange('all')}
@@ -111,6 +113,32 @@ export function Sidebar({
                 aria-pressed={scope === 'criminal'}
               >
                 형법
+              </button>
+              <button
+                onClick={() => onScopeChange('civil_procedure')}
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  scope === 'civil_procedure' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                }`}
+                style={{
+                  background: scope === 'civil_procedure' ? CIVIL_PROCEDURE_THEME.gradient : CIVIL_PROCEDURE_THEME.lightBg,
+                  color: scope === 'civil_procedure' ? 'white' : CIVIL_PROCEDURE_THEME.textColor,
+                }}
+                aria-pressed={scope === 'civil_procedure'}
+              >
+                민사소송법
+              </button>
+              <button
+                onClick={() => onScopeChange('criminal_procedure')}
+                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  scope === 'criminal_procedure' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
+                }`}
+                style={{
+                  background: scope === 'criminal_procedure' ? CRIMINAL_PROCEDURE_THEME.gradient : CRIMINAL_PROCEDURE_THEME.lightBg,
+                  color: scope === 'criminal_procedure' ? 'white' : CRIMINAL_PROCEDURE_THEME.textColor,
+                }}
+                aria-pressed={scope === 'criminal_procedure'}
+              >
+                형사소송법
               </button>
             </div>
           </div>
