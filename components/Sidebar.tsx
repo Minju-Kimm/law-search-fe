@@ -31,7 +31,7 @@ export function Sidebar({
       {!isMobileOpen && (
         <button
           onClick={onMobileToggle}
-          className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg shadow-md transition-all hover:scale-105 active:scale-95"
+          className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95"
           style={{ background: colors.accent.indigo }}
           aria-label="메뉴 열기"
         >
@@ -79,21 +79,21 @@ export function Sidebar({
           </button>
 
           {/* 헤더 */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <Filter className="w-6 h-6" style={{ color: colors.accent.indigo }} />
-              <h2 className="text-xl font-bold" style={{ color: colors.fg.primary }}>
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Filter className="w-5 h-5" style={{ color: colors.accent.indigo }} />
+              <h2 className="text-lg font-semibold" style={{ color: colors.fg.primary }}>
                 법률 범위
               </h2>
             </div>
-            <p className="text-sm" style={{ color: colors.fg.tertiary }}>
+            <p className="text-xs" style={{ color: colors.fg.tertiary }}>
               검색할 법률을 선택하세요
             </p>
           </div>
 
           {/* 법 범위 선택 */}
           <div className="flex-1 overflow-y-auto">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               {scopeOptions.map((option) => {
                 const lawColor = getLawColor(option.lawCode);
                 const isActive = scope === option.value;
@@ -102,11 +102,11 @@ export function Sidebar({
                   <button
                     key={option.value}
                     onClick={() => onScopeChange(option.value)}
-                    className="py-4 px-5 rounded-xl font-semibold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="py-3 px-4 rounded-lg font-medium text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: isActive ? lawColor.primary : lawColor.bg,
                       color: isActive ? 'white' : lawColor.text,
-                      border: `2px solid ${isActive ? lawColor.primary : lawColor.border}`,
+                      border: `1px solid ${isActive ? lawColor.primary : lawColor.border}`,
                     }}
                     aria-pressed={isActive}
                   >
