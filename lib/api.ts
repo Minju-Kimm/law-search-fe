@@ -1,5 +1,5 @@
 // lib/api.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8080';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 
 export type Scope = 'all' | 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
 export type LawType = 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
@@ -32,6 +32,30 @@ export interface HealthResponse {
   db: boolean;
   search: boolean;
   version: string;
+}
+
+// Bookmark & Auth types
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  provider: 'google' | 'naver';
+  avatar?: string;
+}
+
+export interface MeResponse {
+  user: User;
+}
+
+export interface Bookmark {
+  id: string;
+  userId: string;
+  articleId: string;
+  joCode: string;
+  lawType: LawType;
+  heading: string;
+  note?: string;
+  createdAt: string;
 }
 
 // ---- helpers ----
@@ -79,6 +103,21 @@ function normalizeSearch(json: any): SearchResponse {
   };
 }
 
+// API 클라이언트 (credentials: 'include' 기본값, 401 처리)
+async function apiFetch(url: string, options?: RequestInit): Promise<Response> {
+  const response = await fetch(url, {
+    credentials: 'include',
+    ...options,
+  });
+
+  // 401 Unauthorized -> 로그인 페이지로 리다이렉트
+  if (response.status === 401 && typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+
+  return response;
+}
+
 async function ok<T>(r: Response): Promise<T> {
   if (!r.ok) {
     let m = `${r.status} ${r.statusText}`;
@@ -92,11 +131,14 @@ async function ok<T>(r: Response): Promise<T> {
 }
 
 // ---- APIs ----
+
+// Health check
 export async function checkHealth(): Promise<HealthResponse> {
-  const r = await fetch(`${BASE_URL}/health`, { cache: 'no-store' });
+  const r = await apiFetch(`${BASE_URL}/health`, { cache: 'no-store' });
   return ok<HealthResponse>(r);
 }
 
+// Law search
 export async function search(
   q: string,
   scope: Scope = 'all',
@@ -104,20 +146,72 @@ export async function search(
   offset = 0
 ): Promise<SearchResponse> {
   const url = `${BASE_URL}/search?scope=${scope}&q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`;
-  const r = await fetch(url, { cache: 'no-store' });
+  const r = await apiFetch(url, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeSearch(raw);
 }
 
 export async function getArticleByJoCode(joCode: string, law: LawType = 'civil'): Promise<Article> {
-  const r = await fetch(`${BASE_URL}/articles/by-jo/${joCode}?law=${law}`, { cache: 'no-store' });
+  const r = await apiFetch(`${BASE_URL}/articles/by-jo/${joCode}?law=${law}`, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeArticle(raw);
 }
 
 export async function getArticleByNumber(articleNo: number, law: LawType = 'civil', subNo = 0): Promise<Article> {
   const qs = subNo > 0 ? `?law=${law}&sub_no=${subNo}` : `?law=${law}`;
-  const r = await fetch(`${BASE_URL}/articles/${articleNo}${qs}`, { cache: 'no-store' });
+  const r = await apiFetch(`${BASE_URL}/articles/${articleNo}${qs}`, { cache: 'no-store' });
   const raw = await ok<any>(r);
   return normalizeArticle(raw);
+}
+
+// Auth APIs
+export async function getMe(): Promise<MeResponse> {
+  const r = await apiFetch(`${BASE_URL}/api/users/me`, { cache: 'no-store' });
+  return ok<MeResponse>(r);
+}
+
+export function getLoginUrl(provider: 'google' | 'naver'): string {
+  return `${BASE_URL}/api/auth/login/${provider}`;
+}
+
+export async function logout(): Promise<void> {
+  const r = await apiFetch(`${BASE_URL}/api/auth/logout`, {
+    method: 'POST',
+    cache: 'no-store',
+  });
+  if (!r.ok) {
+    throw new Error(`Logout failed: ${r.status} ${r.statusText}`);
+  }
+}
+
+// Bookmark APIs
+export async function getBookmarks(): Promise<Bookmark[]> {
+  const r = await apiFetch(`${BASE_URL}/api/bookmarks`, { cache: 'no-store' });
+  return ok<Bookmark[]>(r);
+}
+
+export async function createBookmark(data: {
+  articleId: string;
+  joCode: string;
+  lawType: LawType;
+  heading: string;
+  note?: string;
+}): Promise<Bookmark> {
+  const r = await apiFetch(`${BASE_URL}/api/bookmarks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    cache: 'no-store',
+  });
+  return ok<Bookmark>(r);
+}
+
+export async function deleteBookmark(id: string): Promise<void> {
+  const r = await apiFetch(`${BASE_URL}/api/bookmarks/${id}`, {
+    method: 'DELETE',
+    cache: 'no-store',
+  });
+  if (!r.ok) {
+    throw new Error(`Delete failed: ${r.status} ${r.statusText}`);
+  }
 }
