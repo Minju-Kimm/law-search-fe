@@ -69,52 +69,52 @@ function HomeContent() {
             className="mb-8"
           >
             <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <Search className="w-5 h-5" style={{ color: colors.fg.tertiary }} />
-                </div>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="조문 번호나 키워드를 입력해보세요"
-                  className="w-full pl-12 pr-32 py-4 text-base rounded-lg border focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: colors.bg.elevated,
-                    borderColor: colors.bg.tertiary,
-                    color: colors.fg.primary,
-                  }}
-                  autoComplete="off"
-                  spellCheck={false}
-                  aria-label="법률 검색"
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  {/* 음성 검색 버튼 */}
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                <div className="relative flex-1">
+                  <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                    <Search className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: colors.fg.tertiary, opacity: 0.5 }} />
+                  </div>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="조문 번호나 키워드를 입력해보세요"
+                    className="w-full pl-11 sm:pl-14 pr-12 sm:pr-14 py-3 sm:py-4 text-base sm:text-lg rounded-xl border-2 focus:outline-none focus:ring-2 transition-all shadow-sm"
+                    style={{
+                      backgroundColor: colors.bg.elevated,
+                      borderColor: colors.bg.tertiary,
+                      color: colors.fg.primary,
+                    }}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-label="법률 검색"
+                  />
+                  {/* 음성 검색 버튼 (검색바 내부 우측) */}
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     type="button"
                     onClick={startVoiceSearch}
-                    className="p-2 rounded-lg transition-all"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-lg transition-all"
                     style={{
-                      background: isListening ? colors.semantic.error : colors.bg.tertiary,
-                      color: colors.fg.primary,
+                      background: isListening ? colors.semantic.error : colors.accent.indigo,
+                      color: 'white',
                     }}
                     aria-label="음성 검색"
                   >
-                    <Mic className="w-4 h-4" />
-                  </motion.button>
-                  {/* 검색 버튼 */}
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="submit"
-                    className="px-6 py-2 rounded-lg text-white font-medium transition-all"
-                    style={{ background: colors.accent.indigo }}
-                  >
-                    검색
+                    <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                   </motion.button>
                 </div>
+                {/* 검색 버튼 (검색바 우측) */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-semibold transition-all shadow-md whitespace-nowrap"
+                  style={{ background: colors.accent.indigo }}
+                >
+                  검색
+                </motion.button>
               </div>
             </form>
           </motion.div>
