@@ -31,18 +31,18 @@ export function Sidebar({
       {!isMobileOpen && (
         <button
           onClick={onMobileToggle}
-          className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95"
+          className="lg:hidden fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg transition-all hover:scale-110 active:scale-90"
           style={{ background: colors.accent.indigo }}
           aria-label="메뉴 열기"
         >
-          <Filter className="w-4 h-4 text-white" />
+          <Filter className="w-5 h-5 text-white" />
         </button>
       )}
 
       {/* 모바일 오버레이 */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40"
+          className="lg:hidden fixed inset-0 z-40 backdrop-blur-sm"
           style={{ background: colors.overlay }}
           onClick={onMobileToggle}
         />
@@ -51,7 +51,7 @@ export function Sidebar({
       {/* 사이드바 */}
       <aside
         className={`
-          fixed top-16 left-0 h-[calc(100vh-4rem)] w-72 z-40
+          fixed top-16 left-0 h-[calc(100vh-4rem)] w-72 z-50
           transition-transform duration-300 ease-in-out
           lg:static lg:translate-x-0 lg:h-screen lg:top-0
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}

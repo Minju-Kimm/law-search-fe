@@ -117,7 +117,7 @@ export function Header() {
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium text-white"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs sm:text-sm font-medium text-white"
               style={{ background: colors.accent.indigo }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = colors.accent.indigoHover;
@@ -126,8 +126,8 @@ export function Header() {
                 e.currentTarget.style.background = colors.accent.indigo;
               }}
             >
-              <User className="w-4 h-4" />
-              로그인
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">로그인</span>
             </Link>
           )}
         </nav>
