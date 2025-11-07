@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { Search, Mic, Sparkles } from 'lucide-react';
+import { Mic, Sparkles, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Article } from '@/lib/api';
 import { useScope } from '@/lib/hooks/useLawType';
@@ -48,15 +48,15 @@ function HomeContent() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 sm:mb-12 text-center"
+            className="mb-10 sm:mb-14 text-center"
           >
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Sparkles className="w-6 h-6" style={{ color: colors.accent.indigo }} />
-              <h1 className="text-3xl sm:text-4xl font-bold" style={{ color: colors.fg.primary }}>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Sparkles className="w-7 h-7 sm:w-8 sm:h-8" style={{ color: colors.accent.indigo }} />
+              <h1 className="text-3xl sm:text-5xl font-bold" style={{ color: colors.fg.primary }}>
                 {getScopeName(scope)} 법률 검색
               </h1>
             </div>
-            <p className="text-sm sm:text-base" style={{ color: colors.fg.tertiary }}>
+            <p className="text-base sm:text-lg font-medium" style={{ color: colors.fg.tertiary }}>
               정확하고 빠른 법률 검색 서비스
             </p>
           </motion.div>
@@ -69,17 +69,14 @@ function HomeContent() {
             className="mb-8"
           >
             <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                 <div className="relative flex-1">
-                  <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-                    <Search className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: colors.fg.tertiary, opacity: 0.5 }} />
-                  </div>
                   <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="조문 번호나 키워드를 입력해보세요"
-                    className="w-full pl-11 sm:pl-14 pr-12 sm:pr-14 py-3 sm:py-4 text-base sm:text-lg rounded-xl border-2 focus:outline-none focus:ring-2 transition-all shadow-sm"
+                    className="w-full pl-5 sm:pl-6 pr-14 sm:pr-16 py-4 sm:py-5 text-base sm:text-lg rounded-2xl border-2 focus:outline-none focus:ring-2 transition-all font-medium"
                     style={{
                       backgroundColor: colors.bg.elevated,
                       borderColor: colors.bg.tertiary,
@@ -95,14 +92,14 @@ function HomeContent() {
                     whileTap={{ scale: 0.9 }}
                     type="button"
                     onClick={startVoiceSearch}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-lg transition-all"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-xl transition-all"
                     style={{
                       background: isListening ? colors.semantic.error : colors.accent.indigo,
                       color: 'white',
                     }}
                     aria-label="음성 검색"
                   >
-                    <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
                   </motion.button>
                 </div>
                 {/* 검색 버튼 (검색바 우측) */}
@@ -110,7 +107,7 @@ function HomeContent() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  className="px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-semibold transition-all shadow-md whitespace-nowrap"
+                  className="px-8 sm:px-10 py-4 sm:py-5 rounded-2xl text-white text-base sm:text-lg font-bold transition-all shadow-md whitespace-nowrap"
                   style={{ background: colors.accent.indigo }}
                 >
                   검색
@@ -153,14 +150,14 @@ function HomeContent() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-20 rounded-lg"
+              className="text-center py-24 rounded-2xl"
               style={{ backgroundColor: colors.bg.elevated }}
             >
-              <Search className="w-16 h-16 mx-auto mb-4" style={{ color: colors.fg.tertiary }} />
-              <p className="text-lg font-semibold mb-2" style={{ color: colors.fg.primary }}>
+              <Search className="w-20 h-20 mx-auto mb-6" style={{ color: colors.fg.tertiary }} />
+              <p className="text-xl sm:text-2xl font-bold mb-3" style={{ color: colors.fg.primary }}>
                 {getScopeName(scope)} 법률을 검색해보세요
               </p>
-              <p className="text-sm" style={{ color: colors.fg.tertiary }}>
+              <p className="text-base sm:text-lg font-medium" style={{ color: colors.fg.tertiary }}>
                 상단 검색바에서 조문 번호나 키워드를 입력하거나 음성으로 검색할 수 있습니다
               </p>
             </motion.div>
