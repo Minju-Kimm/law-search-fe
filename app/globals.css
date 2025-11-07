@@ -4,46 +4,94 @@
 
 @layer base {
   :root {
-    /* 그라디언트 색상 */
-    --gradient-primary-start: #667eea;
-    --gradient-primary-end: #764ba2;
-    --gradient-accent-start: #fbbf24;
-    --gradient-accent-end: #f59e0b;
+    /* Design System Colors */
+    --bg-primary: #0B1220;
+    --bg-secondary: #0F172A;
+    --bg-tertiary: #1E293B;
 
-    /* 배경 */
-    --bg-overlay: rgba(255, 255, 255, 0.96);
-    --bg-overlay-dark: rgba(0, 0, 0, 0.7);
-    --bg-glass: rgba(255, 255, 255, 0.10);
+    --fg-primary: #F8FAFC;
+    --fg-secondary: #CBD5E1;
+    --fg-tertiary: #94A3B8;
 
-    /* 테두리 */
-    --border-light: rgba(255, 255, 255, 0.30);
-    --border-highlight: rgba(251, 191, 36, 0.6);
+    --accent-indigo: #4F46E5;
+    --accent-emerald: #10B981;
+
+    --overlay: rgba(11, 18, 32, 0.8);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
   }
 
   body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--fg-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid var(--accent-indigo);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* floating bg animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 10px;
+  background: var(--bg-secondary);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #8b5cf6, #d946ef);
-  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border-radius: 14px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #7c3aed, #c026d3);
+  background: #334155;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }

@@ -6,10 +6,11 @@ import "@fontsource/pretendard/700.css";
 import "./globals.css";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
 import { Header } from "@/components/Header";
+import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  title: "법률 조문 검색 - 민법 & 형법",
-  description: "빠르고 정확한 민법 & 형법 조문 검색 서비스",
+  title: "LexSearch - 가장 빠른 법률검색",
+  description: "가장 빠르고 정확한 법률 조문 검색 서비스",
   icons: {
     icon: '/favicon.ico',
   },
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Header />
           {children}
+          <ToastProvider />
         </AuthProvider>
       </body>
     </html>

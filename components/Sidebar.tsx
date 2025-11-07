@@ -1,8 +1,8 @@
 'use client';
 
-import { X, Menu } from 'lucide-react';
+import { X, Filter } from 'lucide-react';
 import type { Scope } from '@/lib/api';
-import { getTheme, ALL_THEME, CIVIL_THEME, CRIMINAL_THEME, CIVIL_PROCEDURE_THEME, CRIMINAL_PROCEDURE_THEME } from '@/lib/constants/theme';
+import { colors, getLawColor } from '@/lib/constants/design-system';
 
 interface SidebarProps {
   scope: Scope;
@@ -17,7 +17,13 @@ export function Sidebar({
   isMobileOpen,
   onMobileToggle,
 }: SidebarProps) {
-  const theme = getTheme(scope);
+  const scopeOptions: Array<{ value: Scope; label: string; lawCode: string }> = [
+    { value: 'all', label: '전체', lawCode: 'CIVIL_CODE' },
+    { value: 'civil', label: '민법', lawCode: 'CIVIL_CODE' },
+    { value: 'criminal', label: '형법', lawCode: 'CRIMINAL_CODE' },
+    { value: 'civil_procedure', label: '민사소송법', lawCode: 'CIVIL_PROCEDURE_CODE' },
+    { value: 'criminal_procedure', label: '형사소송법', lawCode: 'CRIMINAL_PROCEDURE_CODE' },
+  ];
 
   return (
     <>
@@ -25,18 +31,19 @@ export function Sidebar({
       {!isMobileOpen && (
         <button
           onClick={onMobileToggle}
-          className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-full shadow-lg transition-all hover:scale-105"
-          style={{ background: theme.gradient }}
+          className="lg:hidden fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg transition-all hover:scale-110 active:scale-90"
+          style={{ background: colors.accent.indigo }}
           aria-label="메뉴 열기"
         >
-          <Menu className="w-6 h-6 text-white" />
+          <Filter className="w-5 h-5 text-white" />
         </button>
       )}
 
       {/* 모바일 오버레이 */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 z-40 backdrop-blur-sm"
+          style={{ background: colors.overlay }}
           onClick={onMobileToggle}
         />
       )}
@@ -44,102 +51,69 @@ export function Sidebar({
       {/* 사이드바 */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-72 sm:w-80 z-40
+          fixed top-16 left-0 h-[calc(100vh-4rem)] w-72 z-50
           transition-transform duration-300 ease-in-out
+          lg:static lg:translate-x-0 lg:h-screen lg:top-0
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:static
-          shadow-2xl
         `}
-        style={{ background: theme.bgColor }}
+        style={{
+          background: colors.bg.secondary,
+          borderRight: `1px solid ${colors.bg.tertiary}`,
+        }}
       >
-        <div className="h-full flex flex-col p-5 sm:p-6">
+        <div className="h-full flex flex-col p-6">
           {/* 닫기 버튼 (모바일) */}
           <button
             onClick={onMobileToggle}
-            className="lg:hidden absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 transition-colors"
+            className="lg:hidden absolute top-4 right-4 p-2 rounded-lg transition-colors"
             aria-label="메뉴 닫기"
+            style={{ color: colors.fg.tertiary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.bg.tertiary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
-            <X className="w-6 h-6" style={{ color: theme.textColor }} />
+            <X className="w-5 h-5" />
           </button>
 
-          {/* 로고 영역 */}
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2" style={{ color: theme.textColor }}>
-              법률 검색
-            </h1>
-            <p className="text-xs sm:text-sm opacity-70" style={{ color: theme.textColor }}>
-              빠르고 정확한 조문 찾기
+          {/* 헤더 */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Filter className="w-5 h-5" style={{ color: colors.accent.indigo }} />
+              <h2 className="text-lg font-semibold" style={{ color: colors.fg.primary }}>
+                법률 범위
+              </h2>
+            </div>
+            <p className="text-xs" style={{ color: colors.fg.tertiary }}>
+              검색할 법률을 선택하세요
             </p>
           </div>
 
-          {/* 법 범위 선택: 전체/민법/형법/민사소송법/형사소송법 */}
+          {/* 법 범위 선택 */}
           <div className="flex-1 overflow-y-auto">
             <div className="flex flex-col gap-2">
-              <button
-                onClick={() => onScopeChange('all')}
-                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  scope === 'all' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
-                }`}
-                style={{
-                  background: scope === 'all' ? ALL_THEME.gradient : ALL_THEME.lightBg,
-                  color: scope === 'all' ? 'white' : ALL_THEME.textColor,
-                }}
-                aria-pressed={scope === 'all'}
-              >
-                전체
-              </button>
-              <button
-                onClick={() => onScopeChange('civil')}
-                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  scope === 'civil' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
-                }`}
-                style={{
-                  background: scope === 'civil' ? CIVIL_THEME.gradient : CIVIL_THEME.lightBg,
-                  color: scope === 'civil' ? 'white' : CIVIL_THEME.textColor,
-                }}
-                aria-pressed={scope === 'civil'}
-              >
-                민법
-              </button>
-              <button
-                onClick={() => onScopeChange('criminal')}
-                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  scope === 'criminal' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
-                }`}
-                style={{
-                  background: scope === 'criminal' ? CRIMINAL_THEME.gradient : CRIMINAL_THEME.lightBg,
-                  color: scope === 'criminal' ? 'white' : CRIMINAL_THEME.textColor,
-                }}
-                aria-pressed={scope === 'criminal'}
-              >
-                형법
-              </button>
-              <button
-                onClick={() => onScopeChange('civil_procedure')}
-                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  scope === 'civil_procedure' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
-                }`}
-                style={{
-                  background: scope === 'civil_procedure' ? CIVIL_PROCEDURE_THEME.gradient : CIVIL_PROCEDURE_THEME.lightBg,
-                  color: scope === 'civil_procedure' ? 'white' : CIVIL_PROCEDURE_THEME.textColor,
-                }}
-                aria-pressed={scope === 'civil_procedure'}
-              >
-                민사소송법
-              </button>
-              <button
-                onClick={() => onScopeChange('criminal_procedure')}
-                className={`py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl font-semibold text-sm sm:text-base transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  scope === 'criminal_procedure' ? 'shadow-md' : 'opacity-70 hover:opacity-100'
-                }`}
-                style={{
-                  background: scope === 'criminal_procedure' ? CRIMINAL_PROCEDURE_THEME.gradient : CRIMINAL_PROCEDURE_THEME.lightBg,
-                  color: scope === 'criminal_procedure' ? 'white' : CRIMINAL_PROCEDURE_THEME.textColor,
-                }}
-                aria-pressed={scope === 'criminal_procedure'}
-              >
-                형사소송법
-              </button>
+              {scopeOptions.map((option) => {
+                const lawColor = getLawColor(option.lawCode);
+                const isActive = scope === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => onScopeChange(option.value)}
+                    className="py-3 px-4 rounded-lg font-medium text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{
+                      background: isActive ? lawColor.primary : lawColor.bg,
+                      color: isActive ? 'white' : lawColor.text,
+                      border: `1px solid ${isActive ? lawColor.primary : lawColor.border}`,
+                    }}
+                    aria-pressed={isActive}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

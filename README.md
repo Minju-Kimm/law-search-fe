@@ -1,15 +1,17 @@
-# 🎨 법률 조문 검색 서비스 (민법 & 형법)
+# ⚖️ LexSearch - 가장 빠른 법률검색
 
-완전히 새롭고 훨씬 더 예쁜 디자인의 법률 조문 검색 및 북마크 웹 애플리케이션입니다!
+Notion/Linear 감성의 미니멀하고 고급스러운 법률 조문 검색 및 북마크 웹 애플리케이션입니다!
 
-## ✨ 새로운 디자인 특징
+## ✨ 디자인 특징
 
-🌈 **그라데이션 배경** - 보라색, 핑크, 퓨샤 색상의 부드러운 그라데이션
-🫧 **애니메이션 블롭** - 배경에서 움직이는 3개의 블롭 효과
-💎 **글래스모피즘** - 투명하고 블러 처리된 유리 같은 UI
-✨ **Framer Motion** - 부드럽고 세련된 애니메이션
-🎭 **호버 효과** - 마우스를 올리면 살아나는 인터랙티브한 카드들
-🌊 **물결 효과** - 입력 시 스케일이 변하는 검색창
+🎨 **Notion/Linear 스타일** - 미니멀하고 고급스러운 디자인
+🌙 **다크 모드** - #0B1220~#0F172A 배경의 세련된 다크 테마
+📐 **8px 스케일** - 일관된 글자크기/라인하이트/여백 시스템
+🎯 **14px 라운드** - 부드러운 모서리 처리
+✨ **Framer Motion** - 페이지 전환, 페이드, 슬라이드 애니메이션
+🎨 **법률별 색상** - 민법(녹색), 형법(보라), 민사소송법(주황), 형사소송법(빨강)
+🍞 **토스트 알림** - 생성/삭제 피드백
+♿ **접근성** - 키보드 포커스 링, aria-label 완벽 지원
 
 ## 🚀 빠른 시작
 
@@ -75,15 +77,207 @@ npm run dev
 ## 🎨 디자인 시스템
 
 ### 색상 팔레트
-- **Primary**: Violet (보라색) `#8b5cf6`
-- **Secondary**: Fuchsia (퓨샤) `#d946ef`
-- **Accent**: Purple (보라) `#a855f7`
 
-### 애니메이션
-- **입장 효과**: Fade in + Scale
-- **호버 효과**: Scale up + Shadow
-- **로딩**: 3개의 바운싱 점
-- **블롭**: 7초 주기의 유기적 움직임
+#### 배경 (다크모드)
+- **Primary**: `#0B1220` - 메인 배경
+- **Secondary**: `#0F172A` - 서브 배경
+- **Tertiary**: `#1E293B` - 엘리베이티드 배경
+- **Elevated**: `#1E293B` - 카드, 모달 배경
+
+#### 전경 (슬레이트 계열)
+- **Primary**: `#F8FAFC` - 메인 텍스트
+- **Secondary**: `#CBD5E1` - 보조 텍스트
+- **Tertiary**: `#94A3B8` - 비활성 텍스트
+- **Quaternary**: `#64748B` - 비활성 텍스트
+
+#### 포인트 색상
+- **Indigo**: `#4F46E5` - 주요 액션 버튼
+- **Emerald**: `#10B981` - 성공, 민법
+
+#### 법률별 색상
+| 법률 | Primary | Background | Border | Text |
+|------|---------|------------|--------|------|
+| **민법** | `#10B981` | `rgba(16, 185, 129, 0.1)` | `rgba(16, 185, 129, 0.2)` | `#10B981` |
+| **형법** | `#8B5CF6` | `rgba(139, 92, 246, 0.1)` | `rgba(139, 92, 246, 0.2)` | `#8B5CF6` |
+| **민사소송법** | `#F59E0B` | `rgba(245, 158, 11, 0.1)` | `rgba(245, 158, 11, 0.2)` | `#F59E0B` |
+| **형사소송법** | `#EF4444` | `rgba(239, 68, 68, 0.1)` | `rgba(239, 68, 68, 0.2)` | `#EF4444` |
+
+#### 시맨틱 색상
+- **Success**: `#10B981`
+- **Error**: `#EF4444`
+- **Warning**: `#F59E0B`
+- **Info**: `#3B82F6`
+
+### 타이포그래피
+
+#### 폰트
+- **기본**: `system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
+
+#### 폰트 크기 (8px 스케일)
+- **xs**: `12px` - 작은 라벨
+- **sm**: `14px` - 본문 작게
+- **base**: `16px` - 본문
+- **lg**: `18px` - 본문 크게
+- **xl**: `24px` - H3
+- **2xl**: `32px` - H2
+- **3xl**: `40px` - H1
+
+#### 라인 하이트
+- **tight**: `1.2`
+- **normal**: `1.5`
+- **relaxed**: `1.75`
+
+#### 폰트 굵기
+- **normal**: `400`
+- **medium**: `500`
+- **semibold**: `600`
+- **bold**: `700`
+
+### 간격 (8px 스케일)
+- **0**: `0`
+- **1**: `8px`
+- **2**: `16px`
+- **3**: `24px`
+- **4**: `32px`
+- **5**: `40px`
+- **6**: `48px`
+- **7**: `56px`
+- **8**: `64px`
+- **9**: `72px`
+- **10**: `80px`
+
+### 라운드
+- **sm**: `8px`
+- **md**: `14px` (기본)
+- **lg**: `16px`
+- **xl**: `24px`
+- **full**: `9999px`
+
+### 섀도우
+- **sm**: `0 1px 2px 0 rgba(0, 0, 0, 0.05)`
+- **md**: `0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)`
+- **lg**: `0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)`
+- **xl**: `0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)`
+
+### 애니메이션 (Framer Motion)
+
+#### 페이드 인
+```typescript
+{
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.2 }
+}
+```
+
+#### 슬라이드 업
+```typescript
+{
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.3 }
+}
+```
+
+#### 스케일
+```typescript
+{
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+  transition: { duration: 0.2 }
+}
+```
+
+#### 호버 효과
+- **버튼**: `whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}`
+- **카드**: `whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}`
+
+### 반응형 레이아웃
+
+#### 브레이크포인트
+- **Mobile**: `< 640px` - 1열
+- **Tablet**: `640px ~ 1024px` - 2열
+- **Desktop**: `>= 1024px` - 3열
+
+#### 그리드 시스템
+```css
+/* 모바일 */
+.grid { grid-template-columns: 1fr; }
+
+/* 태블릿 */
+@media (min-width: 768px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 데스크탑 */
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+```
+
+### 사용 규칙
+
+#### 1. 색상 사용
+- 배경은 항상 `colors.bg.*` 사용
+- 텍스트는 항상 `colors.fg.*` 사용
+- 법률별 색상은 `getLawColor(lawCode)` 헬퍼 함수 사용
+- 포인트 색상은 주요 액션에만 사용
+
+#### 2. 간격 사용
+- 컴포넌트 내부 간격: `spacing[1]` ~ `spacing[3]`
+- 컴포넌트 간 간격: `spacing[3]` ~ `spacing[6]`
+- 섹션 간 간격: `spacing[6]` ~ `spacing[10]`
+
+#### 3. 타이포그래피 사용
+- 제목: `xl` ~ `3xl`, `font-bold`
+- 본문: `base` ~ `lg`, `font-normal`
+- 라벨/캡션: `xs` ~ `sm`, `font-medium`
+
+#### 4. 애니메이션 사용
+- 페이지 전환: `fadeIn` or `slideUp`
+- 리스트 아이템: `slideUp` with staggered delay
+- 모달: `scale`
+- 버튼/카드 호버: `whileHover` / `whileTap`
+
+#### 5. 접근성
+- 모든 버튼에 `aria-label` 추가
+- 인터랙티브 요소에 키보드 포커스 링 표시
+- 색상 대비는 WCAG AA 기준 준수
+- `prefers-color-scheme` 지원
+
+### 컴포넌트 예시
+
+#### 버튼
+```tsx
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  className="px-6 py-3 rounded-lg font-medium text-white"
+  style={{ background: colors.accent.indigo }}
+  aria-label="검색"
+>
+  검색
+</motion.button>
+```
+
+#### 카드
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  whileHover={{ scale: 1.01 }}
+  className="rounded-lg p-6"
+  style={{
+    background: colors.bg.elevated,
+    border: `1px solid ${lawColor.border}`,
+  }}
+>
+  {/* 카드 내용 */}
+</motion.div>
+```
 
 ## 📦 기술 스택
 
