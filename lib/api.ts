@@ -1,5 +1,5 @@
 // lib/api.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE ?? '';
 
 export type Scope = 'all' | 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
 export type LawType = 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
@@ -103,17 +103,12 @@ function normalizeSearch(json: any): SearchResponse {
   };
 }
 
-// API 클라이언트 (credentials: 'include' 기본값, 401 처리)
+// API 클라이언트 (credentials: 'include' 기본값)
 async function apiFetch(url: string, options?: RequestInit): Promise<Response> {
   const response = await fetch(url, {
     credentials: 'include',
     ...options,
   });
-
-  // 401 Unauthorized -> 로그인 페이지로 리다이렉트
-  if (response.status === 401 && typeof window !== 'undefined') {
-    window.location.href = '/login';
-  }
 
   return response;
 }
