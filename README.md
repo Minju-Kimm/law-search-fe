@@ -24,14 +24,26 @@ npm install
 
 ### 2. 환경변수 설정
 
-`.env.local` 파일을 생성하고 백엔드 API 주소를 설정하세요:
+`.env.example` 파일을 복사해서 `.env.local`을 생성하세요:
 
 ```bash
-# 개발 환경 (상대 경로)
-NEXT_PUBLIC_API_BASE_URL=
+cp .env.example .env.local
+```
 
-# 프로덕션 환경 (절대 경로)
-# NEXT_PUBLIC_API_BASE_URL=https://api.example.com
+**로컬 개발 환경 설정**:
+```bash
+# 로컬 백엔드 서버 주소 (Next.js rewrite 적용)
+API_REWRITE_TARGET=http://localhost:8000
+
+# API Base URL - 비워두기 (상대 경로 사용)
+NEXT_PUBLIC_API_BASE_URL=
+```
+
+**프로덕션 환경 (Vercel) 설정**:
+```bash
+# Vercel 환경 변수에 다음을 설정하세요:
+# NEXT_PUBLIC_API_BASE_URL=https://your-backend-api.com
+# (API_REWRITE_TARGET는 설정하지 않음)
 ```
 
 ### 3. 개발 서버 실행
