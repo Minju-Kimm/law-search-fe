@@ -186,11 +186,9 @@ export async function getBookmarks(): Promise<Bookmark[]> {
 }
 
 export async function createBookmark(data: {
-  articleId: string;
-  joCode: string;
-  lawType: LawType;
-  heading: string;
-  note?: string;
+  articleNo: number;
+  articleSubNo: number;
+  lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
 }): Promise<Bookmark> {
   const r = await apiFetch(`${BASE_URL}/api/bookmarks`, {
     method: 'POST',

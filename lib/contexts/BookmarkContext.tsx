@@ -10,11 +10,9 @@ interface BookmarkContextType {
   loading: boolean;
   isBookmarked: (joCode: string) => boolean;
   addBookmark: (data: {
-    articleId: string;
-    joCode: string;
-    lawType: LawType;
-    heading: string;
-    note?: string;
+    articleNo: number;
+    articleSubNo: number;
+    lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
   }) => Promise<void>;
   removeBookmark: (joCode: string) => Promise<void>;
   refetch: () => Promise<void>;
@@ -56,11 +54,9 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
   };
 
   const addBookmark = async (data: {
-    articleId: string;
-    joCode: string;
-    lawType: LawType;
-    heading: string;
-    note?: string;
+    articleNo: number;
+    articleSubNo: number;
+    lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
   }) => {
     if (!user) {
       toast.error('로그인이 필요합니다');
