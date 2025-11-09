@@ -83,16 +83,20 @@ describe('API Client', () => {
   describe('createBookmark', () => {
     it('should create bookmark successfully', async () => {
       const newBookmark = {
-        articleId: 'art-1',
-        joCode: '제1조',
-        lawType: 'civil' as const,
-        heading: '권리능력의 존속기간',
+        lawCode: 'CIVIL_CODE' as const,
+        articleNo: 1,
+        memo: '권리능력의 존속기간 관련',
       };
 
       const mockResponse = {
-        id: '1',
-        userId: '123',
-        ...newBookmark,
+        id: 1,
+        lawCode: 'CIVIL_CODE' as const,
+        articleNo: '1',
+        articleSubNo: 0,
+        joCode: '010000',
+        heading: '제1조(권리능력의 존속기간)',
+        body: '사람은 생존한 동안 권리와 의무의 주체가 된다.',
+        memo: '권리능력의 존속기간 관련',
         createdAt: '2024-01-01T00:00:00Z',
       };
 

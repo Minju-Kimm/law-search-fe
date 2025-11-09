@@ -68,11 +68,19 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       setBookmarks((prev) => [...prev, newBookmark]);
       toast.success('북마크에 추가되었습니다');
     } catch (err: any) {
+      console.error('북마크 추가 에러:', err);
+
       if (err.message === 'DUPLICATE_BOOKMARK') {
         toast.error('이미 북마크된 조문입니다.');
         return;
       }
-      toast.error('북마크 추가에 실패했습니다');
+
+      if (err.message?.includes('401')) {
+        toast.error('인증이 만료되었습니다. 다시 로그인해주세요.');
+        return;
+      }
+
+      toast.error(`북마크 추가에 실패했습니다: ${err.message}`);
     }
   };
 
@@ -85,7 +93,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
     setBookmarks((prev) => prev.filter((b) => b.joCode !== joCode));
 
     try {
-      await deleteBookmark(bookmark.id);
+      await deleteBookmark(String(bookmark.id));
       toast.success('북마크에서 제거되었습니다');
     } catch (err: any) {
       // 실패 시 롤백

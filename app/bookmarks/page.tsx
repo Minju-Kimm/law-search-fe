@@ -11,14 +11,15 @@ import Link from 'next/link';
 import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
 import toast from 'react-hot-toast';
 
-type FilterType = 'all' | 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
+type LawCodeType = 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
+type FilterType = 'all' | LawCodeType;
 
 export default function BookmarksPage() {
   const { user, loading: authLoading } = useAuth();
   const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [filter, setFilter] = useState<FilterType>('all');
 
   useEffect(() => {
@@ -49,21 +50,21 @@ export default function BookmarksPage() {
   // 필터링된 북마크
   const filteredBookmarks = useMemo(() => {
     if (filter === 'all') return bookmarks;
-    return bookmarks.filter((b) => b.lawType === filter);
+    return bookmarks.filter((b) => b.lawCode === filter);
   }, [bookmarks, filter]);
 
   // 필터 라벨 가져오기
   const getFilterLabel = (filterType: FilterType) => {
     switch (filterType) {
       case 'all': return '전체';
-      case 'civil': return '민법';
-      case 'criminal': return '형법';
-      case 'civil_procedure': return '민사소송법';
-      case 'criminal_procedure': return '형사소송법';
+      case 'CIVIL_CODE': return '민법';
+      case 'CRIMINAL_CODE': return '형법';
+      case 'CIVIL_PROCEDURE_CODE': return '민사소송법';
+      case 'CRIMINAL_PROCEDURE_CODE': return '형사소송법';
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     if (deletingIds.has(id)) return;
 
     // 낙관적 업데이트
@@ -72,7 +73,7 @@ export default function BookmarksPage() {
     setDeletingIds(new Set(deletingIds).add(id));
 
     try {
-      await deleteBookmark(id);
+      await deleteBookmark(String(id));
       toast.success('북마크가 삭제되었습니다');
     } catch (err: any) {
       // 롤백
@@ -84,17 +85,6 @@ export default function BookmarksPage() {
         next.delete(id);
         return next;
       });
-    }
-  };
-
-  // lawCode 매핑
-  const getLawCodeFromType = (lawType: string): string => {
-    switch (lawType) {
-      case 'civil': return 'CIVIL_CODE';
-      case 'criminal': return 'CRIMINAL_CODE';
-      case 'civil_procedure': return 'CIVIL_PROCEDURE_CODE';
-      case 'criminal_procedure': return 'CRIMINAL_PROCEDURE_CODE';
-      default: return 'CIVIL_CODE';
     }
   };
 
@@ -169,7 +159,7 @@ export default function BookmarksPage() {
             transition={{ delay: 0.1 }}
             className="flex gap-2 mb-6 overflow-x-auto pb-2"
           >
-            {(['all', 'civil', 'criminal', 'civil_procedure', 'criminal_procedure'] as FilterType[]).map((f) => (
+            {(['all', 'CIVIL_CODE', 'CRIMINAL_CODE', 'CIVIL_PROCEDURE_CODE', 'CRIMINAL_PROCEDURE_CODE'] as FilterType[]).map((f) => (
               <motion.button
                 key={f}
                 whileHover={{ scale: 1.02 }}
@@ -184,7 +174,7 @@ export default function BookmarksPage() {
               >
                 {getFilterLabel(f)}
                 {f === 'all' && ` (${bookmarks.length})`}
-                {f !== 'all' && ` (${bookmarks.filter((b) => b.lawType === f).length})`}
+                {f !== 'all' && ` (${bookmarks.filter((b) => b.lawCode === f).length})`}
               </motion.button>
             ))}
           </motion.div>
@@ -220,11 +210,10 @@ export default function BookmarksPage() {
             )}
           </motion.div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {filteredBookmarks.map((bookmark, index) => {
-              const lawCode = getLawCodeFromType(bookmark.lawType);
-              const lawColor = getLawColor(lawCode);
-              const lawName = getLawName(lawCode);
+              const lawColor = getLawColor(bookmark.lawCode);
+              const lawName = getLawName(bookmark.lawCode);
 
               return (
                 <motion.div
@@ -233,7 +222,7 @@ export default function BookmarksPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ y: -2 }}
-                  className="rounded-xl p-5 sm:p-6 transition-all"
+                  className="rounded-xl p-6 sm:p-7 transition-all"
                   style={{
                     background: colors.bg.elevated,
                     border: `1px solid ${lawColor.border}`,
@@ -246,41 +235,20 @@ export default function BookmarksPage() {
                     e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                   }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span
-                          className="text-xs font-semibold px-2.5 py-1 rounded-md"
-                          style={{
-                            backgroundColor: lawColor.bg,
-                            color: lawColor.text,
-                          }}
-                        >
-                          {lawName}
-                        </span>
-                        <span className="text-sm font-medium" style={{ color: colors.fg.tertiary }}>
-                          {bookmark.joCode}
-                        </span>
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold mb-3" style={{ color: colors.fg.primary }}>
-                        {bookmark.heading}
-                      </h3>
-                      {bookmark.note && (
-                        <p className="text-sm px-3 py-2 rounded-md mb-3" style={{
-                          color: colors.fg.secondary,
-                          background: 'rgba(245, 158, 11, 0.1)',
-                          border: '1px solid rgba(245, 158, 11, 0.2)',
-                        }}>
-                          {bookmark.note}
-                        </p>
-                      )}
-                      <p className="text-xs" style={{ color: colors.fg.tertiary }}>
-                        {new Date(bookmark.createdAt).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </p>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className="text-xs font-semibold px-2.5 py-1 rounded-md"
+                        style={{
+                          backgroundColor: lawColor.bg,
+                          color: lawColor.text,
+                        }}
+                      >
+                        {lawName}
+                      </span>
+                      <span className="text-sm font-medium" style={{ color: colors.fg.tertiary }}>
+                        {bookmark.joCode}
+                      </span>
                     </div>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -304,6 +272,79 @@ export default function BookmarksPage() {
                       <Trash2 className="w-5 h-5" />
                     </motion.button>
                   </div>
+
+                  {/* Heading */}
+                  <h3 className="text-lg sm:text-xl font-bold mb-4" style={{ color: colors.fg.primary }}>
+                    {bookmark.heading}
+                  </h3>
+
+                  {/* Body - 전체 표시 */}
+                  <div className="mb-4 p-4 rounded-lg" style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                  }}>
+                    <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" style={{ color: colors.fg.secondary }}>
+                      {bookmark.body}
+                    </p>
+                  </div>
+
+                  {/* Memo */}
+                  {bookmark.memo && (
+                    <div className="mb-4 px-4 py-3 rounded-lg" style={{
+                      background: 'rgba(245, 158, 11, 0.1)',
+                      border: '1px solid rgba(245, 158, 11, 0.25)',
+                    }}>
+                      <div className="flex items-start gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-wide flex-shrink-0" style={{ color: 'rgb(245, 158, 11)' }}>
+                          메모
+                        </span>
+                        <p className="text-sm leading-relaxed" style={{ color: colors.fg.secondary }}>
+                          {bookmark.memo}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Clauses */}
+                  {bookmark.clauses && bookmark.clauses.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: colors.fg.tertiary }}>
+                        항/호
+                      </h4>
+                      <div className="space-y-2">
+                        {bookmark.clauses.map((clause, idx) => (
+                          <div
+                            key={`clause-${idx}`}
+                            className="flex gap-3 p-3 rounded-lg"
+                            style={{
+                              backgroundColor: lawColor.bg,
+                            }}
+                          >
+                            <span className="font-semibold text-sm flex-shrink-0" style={{ color: lawColor.text }}>
+                              {clause.no}
+                            </span>
+                            <span className="text-sm leading-relaxed" style={{ color: colors.fg.primary }}>
+                              {clause.text}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 날짜 */}
+                  <p className="text-xs mt-4 pt-4" style={{
+                    color: colors.fg.tertiary,
+                    borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+                  }}>
+                    {new Date(bookmark.createdAt).toLocaleDateString('ko-KR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
                 </motion.div>
               );
             })}

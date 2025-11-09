@@ -48,14 +48,18 @@ export interface MeResponse {
 }
 
 export interface Bookmark {
-  id: string;
-  userId: string;
-  articleId: string;
+  id: number;
+  lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
+  articleNo: string;
+  articleSubNo: number;
   joCode: string;
-  lawType: LawType;
   heading: string;
-  note?: string;
+  body: string;
+  memo?: string | null;
+  notes?: string[];
+  clauses?: Array<{ no: string; text: string }>;
   createdAt: string;
+  updatedAt?: string;
 }
 
 // ---- helpers ----
@@ -190,6 +194,8 @@ export async function createBookmark(data: {
   articleNo: number;
   memo?: string;
 }): Promise<Bookmark> {
+  console.log('Creating bookmark with data:', data);
+
   const r = await apiFetch(`${BASE_URL}/api/bookmarks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -197,8 +203,14 @@ export async function createBookmark(data: {
     cache: 'no-store',
   });
 
+  console.log('Bookmark creation response status:', r.status);
+
   if (r.status === 409) {
     throw new Error('DUPLICATE_BOOKMARK');
+  }
+
+  if (r.status === 401) {
+    throw new Error('UNAUTHORIZED - 401: Authentication required');
   }
 
   return ok<Bookmark>(r);
