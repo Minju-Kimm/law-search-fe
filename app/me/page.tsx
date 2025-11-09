@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { User as UserIcon, Mail, Shield } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function MePage() {
   const { user, loading } = useAuth();
@@ -41,7 +42,15 @@ export default function MePage() {
       <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
         <div className="flex items-center gap-4 mb-8 pb-8 border-b border-gray-200">
           {user.avatar ? (
-            <img src={user.avatar} alt={user.name} className="w-16 h-16 sm:w-20 sm:h-20 rounded-full" />
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+              <Image
+                src={user.avatar}
+                alt={user.name}
+                fill
+                className="rounded-full object-cover"
+                sizes="(max-width: 640px) 64px, 80px"
+              />
+            </div>
           ) : (
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
               {user.name[0].toUpperCase()}
