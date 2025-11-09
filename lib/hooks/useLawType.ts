@@ -2,15 +2,21 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Scope } from '@/lib/api';
 
+const validScopes: Scope[] = ['all', 'civil', 'criminal', 'civil_procedure', 'criminal_procedure'];
+
 export function useScope() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [scope, setScope] = useState<Scope>('all');
 
-  // URL에서 scope 읽기
+  // 초기값을 URL에서 읽기
+  const [scope, setScope] = useState<Scope>(() => {
+    const scopeParam = searchParams.get('scope');
+    return (scopeParam && validScopes.includes(scopeParam as Scope)) ? scopeParam as Scope : 'all';
+  });
+
+  // URL이 변경될 때 scope 업데이트
   useEffect(() => {
     const scopeParam = searchParams.get('scope');
-    const validScopes: Scope[] = ['all', 'civil', 'criminal', 'civil_procedure', 'criminal_procedure'];
     if (scopeParam && validScopes.includes(scopeParam as Scope)) {
       setScope(scopeParam as Scope);
     }
