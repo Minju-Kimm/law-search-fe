@@ -4,11 +4,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Bookmark as BookmarkType, getBookmarks, deleteBookmark } from '@/lib/api';
-import { Trash2, Bookmark as BookmarkIcon, Plus, Filter } from 'lucide-react';
+import { Bookmark as BookmarkIcon, Plus } from 'lucide-react';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { BookmarkCard } from '@/components/BookmarkCard';
+import { BookmarkModal } from '@/components/BookmarkModal';
 import Link from 'next/link';
-import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
+import { colors } from '@/lib/constants/design-system';
 import toast from 'react-hot-toast';
 
 type LawCodeType = 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
@@ -21,6 +23,7 @@ export default function BookmarksPage() {
   const [error, setError] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [filter, setFilter] = useState<FilterType>('all');
+  const [selectedBookmark, setSelectedBookmark] = useState<BookmarkType | null>(null);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -210,145 +213,28 @@ export default function BookmarksPage() {
             )}
           </motion.div>
         ) : (
-          <div className="space-y-5">
-            {filteredBookmarks.map((bookmark, index) => {
-              const lawColor = getLawColor(bookmark.lawCode);
-              const lawName = getLawName(bookmark.lawCode);
-
-              return (
-                <motion.div
-                  key={bookmark.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ y: -2 }}
-                  className="rounded-xl p-6 sm:p-7 transition-all"
-                  style={{
-                    background: colors.bg.elevated,
-                    border: `1px solid ${lawColor.border}`,
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className="text-xs font-semibold px-2.5 py-1 rounded-md"
-                        style={{
-                          backgroundColor: lawColor.bg,
-                          color: lawColor.text,
-                        }}
-                      >
-                        {lawName}
-                      </span>
-                      <span className="text-sm font-medium" style={{ color: colors.fg.tertiary }}>
-                        {bookmark.joCode}
-                      </span>
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDelete(bookmark.id)}
-                      disabled={deletingIds.has(bookmark.id)}
-                      className="flex-shrink-0 p-2.5 rounded-lg transition-all disabled:opacity-50"
-                      style={{
-                        color: colors.semantic.error,
-                        backgroundColor: 'rgba(239, 68, 68, 0.05)',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
-                      }}
-                      title="삭제"
-                      aria-label="북마크 삭제"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-
-                  {/* Heading */}
-                  <h3 className="text-lg sm:text-xl font-bold mb-4" style={{ color: colors.fg.primary }}>
-                    {bookmark.heading}
-                  </h3>
-
-                  {/* Body - 전체 표시 */}
-                  <div className="mb-4 p-4 rounded-lg" style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                  }}>
-                    <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap" style={{ color: colors.fg.secondary }}>
-                      {bookmark.body}
-                    </p>
-                  </div>
-
-                  {/* Memo */}
-                  {bookmark.memo && (
-                    <div className="mb-4 px-4 py-3 rounded-lg" style={{
-                      background: 'rgba(245, 158, 11, 0.1)',
-                      border: '1px solid rgba(245, 158, 11, 0.25)',
-                    }}>
-                      <div className="flex items-start gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wide flex-shrink-0" style={{ color: 'rgb(245, 158, 11)' }}>
-                          메모
-                        </span>
-                        <p className="text-sm leading-relaxed" style={{ color: colors.fg.secondary }}>
-                          {bookmark.memo}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Clauses */}
-                  {bookmark.clauses && bookmark.clauses.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: colors.fg.tertiary }}>
-                        항/호
-                      </h4>
-                      <div className="space-y-2">
-                        {bookmark.clauses.map((clause, idx) => (
-                          <div
-                            key={`clause-${idx}`}
-                            className="flex gap-3 p-3 rounded-lg"
-                            style={{
-                              backgroundColor: lawColor.bg,
-                            }}
-                          >
-                            <span className="font-semibold text-sm flex-shrink-0" style={{ color: lawColor.text }}>
-                              {clause.no}
-                            </span>
-                            <span className="text-sm leading-relaxed" style={{ color: colors.fg.primary }}>
-                              {clause.text}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 날짜 */}
-                  <p className="text-xs mt-4 pt-4" style={{
-                    color: colors.fg.tertiary,
-                    borderTop: '1px solid rgba(255, 255, 255, 0.05)'
-                  }}>
-                    {new Date(bookmark.createdAt).toLocaleDateString('ko-KR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </motion.div>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredBookmarks.map((bookmark, index) => (
+              <BookmarkCard
+                key={bookmark.id}
+                bookmark={bookmark}
+                onDelete={handleDelete}
+                onClick={() => setSelectedBookmark(bookmark)}
+                deleting={deletingIds.has(bookmark.id)}
+                index={index}
+              />
+            ))}
           </div>
+        )}
+
+        {/* Modal */}
+        {selectedBookmark && (
+          <BookmarkModal
+            bookmark={selectedBookmark}
+            onClose={() => setSelectedBookmark(null)}
+            onDelete={handleDelete}
+            deleting={deletingIds.has(selectedBookmark.id)}
+          />
         )}
       </div>
     </div>
