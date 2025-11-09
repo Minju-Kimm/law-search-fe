@@ -1,10 +1,14 @@
 'use client';
 
-import { Volume2 } from 'lucide-react';
+import { Volume2, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Article } from '@/lib/api';
 import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
 import { SEARCH_CONFIG } from '@/lib/constants/search';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useBookmark } from '@/lib/contexts/BookmarkContext';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface ArticleCardProps {
   article: Article;
@@ -21,6 +25,9 @@ export function ArticleCard({
   onClick,
   onSpeak,
 }: ArticleCardProps) {
+  const { user } = useAuth();
+  const { isBookmarked, addBookmark, removeBookmark } = useBookmark();
+  const router = useRouter();
   const isExactMatch = index === 0 && isNumericMode;
   const bodyPreview =
     article.body && article.body.length > SEARCH_CONFIG.previewLength
@@ -30,6 +37,37 @@ export function ArticleCard({
   // lawCode 기반 색상 가져오기
   const lawColor = getLawColor(article.lawCode);
   const lawName = getLawName(article.lawCode);
+
+  // 북마크 상태
+  const bookmarked = isBookmarked(article.joCode);
+
+  // 북마크 토글 핸들러
+  const handleBookmarkToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      router.push('/login');
+      return;
+    }
+
+    if (bookmarked) {
+      await removeBookmark(article.joCode);
+    } else {
+      // lawCode를 lawType으로 변환
+      let lawType: 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure' = 'civil';
+      if (article.lawCode === 'CRIMINAL_CODE') lawType = 'criminal';
+      else if (article.lawCode === 'CIVIL_PROCEDURE_CODE') lawType = 'civil_procedure';
+      else if (article.lawCode === 'CRIMINAL_PROCEDURE_CODE') lawType = 'criminal_procedure';
+
+      await addBookmark({
+        articleId: article.id,
+        joCode: article.joCode,
+        lawType,
+        heading: article.heading,
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -97,22 +135,38 @@ export function ArticleCard({
           )}
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSpeak(article);
-          }}
-          className="p-3 rounded-lg flex-shrink-0"
-          style={{
-            backgroundColor: lawColor.bg,
-            color: lawColor.text,
-          }}
-          aria-label="조문 읽어주기"
-        >
-          <Volume2 className="w-5 h-5" />
-        </motion.button>
+        <div className="flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleBookmarkToggle}
+            className="p-3 rounded-lg flex-shrink-0"
+            style={{
+              backgroundColor: bookmarked ? lawColor.bg : colors.bg.tertiary,
+              color: bookmarked ? lawColor.text : colors.fg.tertiary,
+            }}
+            aria-label={bookmarked ? '북마크 해제' : '북마크 추가'}
+          >
+            <Heart className={`w-5 h-5 ${bookmarked ? 'fill-current' : ''}`} />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSpeak(article);
+            }}
+            className="p-3 rounded-lg flex-shrink-0"
+            style={{
+              backgroundColor: lawColor.bg,
+              color: lawColor.text,
+            }}
+            aria-label="조문 읽어주기"
+          >
+            <Volume2 className="w-5 h-5" />
+          </motion.button>
+        </div>
       </div>
     </motion.div>
   );

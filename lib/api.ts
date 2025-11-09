@@ -160,9 +160,9 @@ export async function getArticleByNumber(articleNo: number, law: LawType = 'civi
 }
 
 // Auth APIs
-export async function getMe(): Promise<MeResponse> {
+export async function getMe(): Promise<User> {
   const r = await apiFetch(`${BASE_URL}/api/users/me`, { cache: 'no-store' });
-  return ok<MeResponse>(r);
+  return ok<User>(r);
 }
 
 export function getLoginUrl(provider: 'google' | 'naver'): string {

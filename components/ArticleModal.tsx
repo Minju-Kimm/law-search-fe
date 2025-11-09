@@ -1,9 +1,13 @@
 'use client';
 
-import { X, Volume2 } from 'lucide-react';
+import { X, Volume2, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Article } from '@/lib/api';
 import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { useBookmark } from '@/lib/contexts/BookmarkContext';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface ArticleModalProps {
   article: Article;
@@ -12,8 +16,37 @@ interface ArticleModalProps {
 }
 
 export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
+  const { user } = useAuth();
+  const { isBookmarked, addBookmark, removeBookmark } = useBookmark();
+  const router = useRouter();
   const lawColor = getLawColor(article.lawCode);
   const lawName = getLawName(article.lawCode);
+
+  const bookmarked = isBookmarked(article.joCode);
+
+  const handleBookmarkToggle = async () => {
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      router.push('/login');
+      return;
+    }
+
+    if (bookmarked) {
+      await removeBookmark(article.joCode);
+    } else {
+      let lawType: 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure' = 'civil';
+      if (article.lawCode === 'CRIMINAL_CODE') lawType = 'criminal';
+      else if (article.lawCode === 'CIVIL_PROCEDURE_CODE') lawType = 'civil_procedure';
+      else if (article.lawCode === 'CRIMINAL_PROCEDURE_CODE') lawType = 'criminal_procedure';
+
+      await addBookmark({
+        articleId: article.id,
+        joCode: article.joCode,
+        lawType,
+        heading: article.heading,
+      });
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -121,6 +154,19 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
 
           {/* Actions */}
           <div className="flex gap-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleBookmarkToggle}
+              className="flex-1 px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+              style={{
+                backgroundColor: bookmarked ? lawColor.bg : colors.bg.tertiary,
+                color: bookmarked ? lawColor.text : colors.fg.secondary,
+              }}
+            >
+              <Heart className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+              {bookmarked ? '북마크 해제' : '북마크'}
+            </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
