@@ -21,8 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      const data = await getMe();
-      setUser(data.user);
+      const user = await getMe();
+      setUser(user);
     } catch (err: any) {
       // 401은 apiFetch에서 처리하므로 여기서는 다른 에러만 처리
       if (err.message?.includes('401')) {

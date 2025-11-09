@@ -5,6 +5,7 @@ import "@fontsource/pretendard/600.css";
 import "@fontsource/pretendard/700.css";
 import "./globals.css";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
+import { BookmarkProvider } from "@/lib/contexts/BookmarkContext";
 import { Header } from "@/components/Header";
 import { ToastProvider } from "@/components/Toast";
 
@@ -135,9 +136,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased font-pretendard">
         <AuthProvider>
-          <Header />
-          {children}
-          <ToastProvider />
+          <BookmarkProvider>
+            <Header />
+            {children}
+            <ToastProvider />
+          </BookmarkProvider>
         </AuthProvider>
       </body>
     </html>

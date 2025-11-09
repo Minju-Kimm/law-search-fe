@@ -37,53 +37,65 @@ export function Header() {
       animate={{ y: 0 }}
       className="sticky top-0 z-50 backdrop-blur-lg"
       style={{
-        backgroundColor: 'rgba(15, 23, 42, 0.8)',
-        borderBottom: `1px solid ${colors.bg.tertiary}`,
+        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-2 group"
         >
-          <Scale className="w-6 h-6 text-accent-indigo group-hover:rotate-12 transition-transform" />
+          <Scale className="w-5 h-5 text-accent-indigo group-hover:rotate-12 transition-transform" />
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-fg-primary">
+            <span className="text-base font-bold text-fg-primary">
               LexSearch
             </span>
-            <span className="text-xs text-fg-tertiary hidden sm:block">
+            <span className="text-[10px] text-fg-tertiary hidden sm:block">
               가장 빠른 법률검색
             </span>
           </div>
         </Link>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1.5">
           {loading ? (
             <div
-              className="w-8 h-8 rounded-full animate-pulse"
+              className="w-7 h-7 rounded-full animate-pulse"
               style={{ background: colors.bg.tertiary }}
             />
           ) : user ? (
             <>
               <Link
                 href="/bookmarks"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-bg-tertiary transition-all text-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all text-sm"
                 style={{ color: colors.fg.secondary }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.bg.tertiary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
-                <Bookmark className="w-4 h-4" />
+                <Bookmark className="w-[16px] h-[16px]" />
                 <span className="hidden sm:inline">북마크</span>
               </Link>
 
               <Link
                 href="/me"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-bg-tertiary transition-all"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all"
                 title={user.name}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.bg.tertiary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 {user.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full" />
+                  <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full" />
                 ) : (
                   <div
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold"
                     style={{ background: colors.accent.indigo }}
                   >
                     {user.name[0].toUpperCase()}
@@ -97,7 +109,7 @@ export function Header() {
               <button
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all disabled:opacity-50 text-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all disabled:opacity-50 text-sm"
                 style={{
                   color: colors.fg.secondary,
                 }}
@@ -110,14 +122,14 @@ export function Header() {
                   e.currentTarget.style.color = colors.fg.secondary;
                 }}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-[16px] h-[16px]" />
                 <span className="hidden sm:inline">로그아웃</span>
               </button>
             </>
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs sm:text-sm font-medium text-white"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-sm font-medium text-white"
               style={{ background: colors.accent.indigo }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = colors.accent.indigoHover;
@@ -126,8 +138,8 @@ export function Header() {
                 e.currentTarget.style.background = colors.accent.indigo;
               }}
             >
-              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">로그인</span>
+              <User className="w-[16px] h-[16px]" />
+              <span>로그인</span>
             </Link>
           )}
         </nav>
