@@ -35,9 +35,8 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
       await removeBookmark(article.joCode);
     } else {
       await addBookmark({
-        articleNo: article.articleNo,
-        articleSubNo: article.articleSubNo,
         lawCode: article.lawCode,
+        articleNo: article.articleNo,
       });
     }
   };

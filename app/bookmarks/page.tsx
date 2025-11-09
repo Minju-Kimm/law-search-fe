@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Bookmark as BookmarkType, getBookmarks, deleteBookmark } from '@/lib/api';
-import { Trash2, Bookmark as BookmarkIcon, Plus } from 'lucide-react';
+import { Trash2, Bookmark as BookmarkIcon, Plus, Filter } from 'lucide-react';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import Link from 'next/link';
 import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
 import toast from 'react-hot-toast';
+
+type FilterType = 'all' | 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure';
 
 export default function BookmarksPage() {
   const { user, loading: authLoading } = useAuth();
@@ -17,6 +19,7 @@ export default function BookmarksPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState<FilterType>('all');
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -31,11 +34,32 @@ export default function BookmarksPage() {
       setLoading(true);
       setError(null);
       const data = await getBookmarks();
-      setBookmarks(data);
+      // 최신순 정렬
+      const sorted = data.sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setBookmarks(sorted);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch bookmarks');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 필터링된 북마크
+  const filteredBookmarks = useMemo(() => {
+    if (filter === 'all') return bookmarks;
+    return bookmarks.filter((b) => b.lawType === filter);
+  }, [bookmarks, filter]);
+
+  // 필터 라벨 가져오기
+  const getFilterLabel = (filterType: FilterType) => {
+    switch (filterType) {
+      case 'all': return '전체';
+      case 'civil': return '민법';
+      case 'criminal': return '형법';
+      case 'civil_procedure': return '민사소송법';
+      case 'criminal_procedure': return '형사소송법';
     }
   };
 
@@ -137,34 +161,67 @@ export default function BookmarksPage() {
           </Link>
         </motion.div>
 
+        {/* 필터 버튼 */}
+        {!loading && bookmarks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex gap-2 mb-6 overflow-x-auto pb-2"
+          >
+            {(['all', 'civil', 'criminal', 'civil_procedure', 'criminal_procedure'] as FilterType[]).map((f) => (
+              <motion.button
+                key={f}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setFilter(f)}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap"
+                style={{
+                  background: filter === f ? colors.accent.indigo : colors.bg.elevated,
+                  color: filter === f ? '#fff' : colors.fg.secondary,
+                  border: `1px solid ${filter === f ? colors.accent.indigo : 'rgba(255, 255, 255, 0.06)'}`,
+                }}
+              >
+                {getFilterLabel(f)}
+                {f === 'all' && ` (${bookmarks.length})`}
+                {f !== 'all' && ` (${bookmarks.filter((b) => b.lawType === f).length})`}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+
         {error && <ErrorMessage message={error} />}
 
-        {!loading && bookmarks.length === 0 ? (
+        {!loading && filteredBookmarks.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-20 rounded-lg"
-            style={{ background: colors.bg.elevated }}
+            className="text-center py-20 rounded-xl"
+            style={{ background: colors.bg.elevated, border: '1px solid rgba(255, 255, 255, 0.06)' }}
           >
             <BookmarkIcon className="w-16 h-16 mx-auto mb-4" style={{ color: colors.fg.tertiary }} />
             <h3 className="text-xl font-semibold mb-2" style={{ color: colors.fg.primary }}>
-              아직 북마크가 없습니다
+              {bookmarks.length === 0 ? '아직 북마크가 없습니다' : '해당 필터의 북마크가 없습니다'}
             </h3>
             <p className="mb-6" style={{ color: colors.fg.tertiary }}>
-              법률 조문을 검색하고 북마크를 추가해보세요.
+              {bookmarks.length === 0
+                ? '법률 조문을 검색하고 북마크를 추가해보세요.'
+                : '다른 법률의 북마크를 확인해보세요.'}
             </p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-all font-medium text-white"
-              style={{ background: colors.accent.indigo }}
-            >
-              <Plus className="w-5 h-5" />
-              검색하러 가기
-            </Link>
+            {bookmarks.length === 0 && (
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-all font-medium text-white"
+                style={{ background: colors.accent.indigo }}
+              >
+                <Plus className="w-5 h-5" />
+                검색하러 가기
+              </Link>
+            )}
           </motion.div>
         ) : (
           <div className="space-y-4">
-            {bookmarks.map((bookmark, index) => {
+            {filteredBookmarks.map((bookmark, index) => {
               const lawCode = getLawCodeFromType(bookmark.lawType);
               const lawColor = getLawColor(lawCode);
               const lawName = getLawName(lawCode);
@@ -175,17 +232,25 @@ export default function BookmarksPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow"
+                  whileHover={{ y: -2 }}
+                  className="rounded-xl p-5 sm:p-6 transition-all"
                   style={{
                     background: colors.bg.elevated,
                     border: `1px solid ${lawColor.border}`,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                   }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-3">
                         <span
-                          className="text-xs font-semibold px-2 py-1 rounded"
+                          className="text-xs font-semibold px-2.5 py-1 rounded-md"
                           style={{
                             backgroundColor: lawColor.bg,
                             color: lawColor.text,
@@ -193,23 +258,28 @@ export default function BookmarksPage() {
                         >
                           {lawName}
                         </span>
-                        <span className="text-sm" style={{ color: colors.fg.tertiary }}>
+                        <span className="text-sm font-medium" style={{ color: colors.fg.tertiary }}>
                           {bookmark.joCode}
                         </span>
                       </div>
-                      <h3 className="text-base sm:text-lg font-semibold mb-2" style={{ color: colors.fg.primary }}>
+                      <h3 className="text-base sm:text-lg font-bold mb-3" style={{ color: colors.fg.primary }}>
                         {bookmark.heading}
                       </h3>
                       {bookmark.note && (
-                        <p className="text-sm px-3 py-2 rounded-lg" style={{
+                        <p className="text-sm px-3 py-2 rounded-md mb-3" style={{
                           color: colors.fg.secondary,
                           background: 'rgba(245, 158, 11, 0.1)',
+                          border: '1px solid rgba(245, 158, 11, 0.2)',
                         }}>
                           {bookmark.note}
                         </p>
                       )}
-                      <p className="text-xs mt-2" style={{ color: colors.fg.tertiary }}>
-                        {new Date(bookmark.createdAt).toLocaleDateString('ko-KR')}
+                      <p className="text-xs" style={{ color: colors.fg.tertiary }}>
+                        {new Date(bookmark.createdAt).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
                       </p>
                     </div>
                     <motion.button
@@ -217,15 +287,16 @@ export default function BookmarksPage() {
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleDelete(bookmark.id)}
                       disabled={deletingIds.has(bookmark.id)}
-                      className="flex-shrink-0 p-2 rounded-lg transition-colors disabled:opacity-50"
+                      className="flex-shrink-0 p-2.5 rounded-lg transition-all disabled:opacity-50"
                       style={{
                         color: colors.semantic.error,
+                        backgroundColor: 'rgba(239, 68, 68, 0.05)',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
                       }}
                       title="삭제"
                       aria-label="북마크 삭제"

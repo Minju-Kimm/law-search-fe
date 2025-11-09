@@ -10,9 +10,9 @@ interface BookmarkContextType {
   loading: boolean;
   isBookmarked: (joCode: string) => boolean;
   addBookmark: (data: {
-    articleNo: number;
-    articleSubNo: number;
     lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
+    articleNo: number;
+    memo?: string;
   }) => Promise<void>;
   removeBookmark: (joCode: string) => Promise<void>;
   refetch: () => Promise<void>;
@@ -36,7 +36,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       const data = await getBookmarks();
       setBookmarks(data);
     } catch (err: any) {
-      console.error('Failed to fetch bookmarks:', err);
+      // 401 에러는 인증 문제이므로 조용히 처리
       if (!err.message?.includes('401')) {
         toast.error('북마크를 불러오는데 실패했습니다');
       }
@@ -54,9 +54,9 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
   };
 
   const addBookmark = async (data: {
-    articleNo: number;
-    articleSubNo: number;
     lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
+    articleNo: number;
+    memo?: string;
   }) => {
     if (!user) {
       toast.error('로그인이 필요합니다');
@@ -68,7 +68,10 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
       setBookmarks((prev) => [...prev, newBookmark]);
       toast.success('북마크에 추가되었습니다');
     } catch (err: any) {
-      console.error('Failed to add bookmark:', err);
+      if (err.message === 'DUPLICATE_BOOKMARK') {
+        toast.error('이미 북마크된 조문입니다.');
+        return;
+      }
       toast.error('북마크 추가에 실패했습니다');
     }
   };
@@ -77,12 +80,16 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
     const bookmark = bookmarks.find((b) => b.joCode === joCode);
     if (!bookmark) return;
 
+    // 낙관적 업데이트
+    const prevBookmarks = bookmarks;
+    setBookmarks((prev) => prev.filter((b) => b.joCode !== joCode));
+
     try {
       await deleteBookmark(bookmark.id);
-      setBookmarks((prev) => prev.filter((b) => b.joCode !== joCode));
       toast.success('북마크에서 제거되었습니다');
     } catch (err: any) {
-      console.error('Failed to remove bookmark:', err);
+      // 실패 시 롤백
+      setBookmarks(prevBookmarks);
       toast.error('북마크 제거에 실패했습니다');
     }
   };

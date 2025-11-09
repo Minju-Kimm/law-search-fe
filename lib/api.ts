@@ -186,9 +186,9 @@ export async function getBookmarks(): Promise<Bookmark[]> {
 }
 
 export async function createBookmark(data: {
-  articleNo: number;
-  articleSubNo: number;
   lawCode: 'CIVIL_CODE' | 'CRIMINAL_CODE' | 'CIVIL_PROCEDURE_CODE' | 'CRIMINAL_PROCEDURE_CODE';
+  articleNo: number;
+  memo?: string;
 }): Promise<Bookmark> {
   const r = await apiFetch(`${BASE_URL}/api/bookmarks`, {
     method: 'POST',
@@ -196,6 +196,11 @@ export async function createBookmark(data: {
     body: JSON.stringify(data),
     cache: 'no-store',
   });
+
+  if (r.status === 409) {
+    throw new Error('DUPLICATE_BOOKMARK');
+  }
+
   return ok<Bookmark>(r);
 }
 
