@@ -34,16 +34,10 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
     if (bookmarked) {
       await removeBookmark(article.joCode);
     } else {
-      let lawType: 'civil' | 'criminal' | 'civil_procedure' | 'criminal_procedure' = 'civil';
-      if (article.lawCode === 'CRIMINAL_CODE') lawType = 'criminal';
-      else if (article.lawCode === 'CIVIL_PROCEDURE_CODE') lawType = 'civil_procedure';
-      else if (article.lawCode === 'CRIMINAL_PROCEDURE_CODE') lawType = 'criminal_procedure';
-
       await addBookmark({
-        articleId: article.id,
-        joCode: article.joCode,
-        lawType,
-        heading: article.heading,
+        articleNo: article.articleNo,
+        articleSubNo: article.articleSubNo,
+        lawCode: article.lawCode,
       });
     }
   };
