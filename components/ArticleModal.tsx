@@ -1,7 +1,8 @@
 'use client';
 
-import { X, Volume2, Heart } from 'lucide-react';
+import { X, Volume2, Heart, StickyNote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import type { Article } from '@/lib/api';
 import { colors, getLawColor, getLawName } from '@/lib/constants/design-system';
 import { useAuth } from '@/lib/contexts/AuthContext';
@@ -21,6 +22,8 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
   const router = useRouter();
   const lawColor = getLawColor(article.lawCode);
   const lawName = getLawName(article.lawCode);
+  const [showMemoDialog, setShowMemoDialog] = useState(false);
+  const [memo, setMemo] = useState('');
 
   const bookmarked = isBookmarked(article.joCode);
 
@@ -34,11 +37,24 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
     if (bookmarked) {
       await removeBookmark(article.joCode);
     } else {
-      await addBookmark({
-        lawCode: article.lawCode,
-        articleNo: article.articleNo,
-      });
+      // 북마크 추가 시 메모 다이얼로그 표시
+      setShowMemoDialog(true);
     }
+  };
+
+  const handleMemoSubmit = async () => {
+    await addBookmark({
+      lawCode: article.lawCode,
+      articleNo: article.articleNo,
+      memo: memo.trim() || undefined,
+    });
+    setShowMemoDialog(false);
+    setMemo('');
+  };
+
+  const handleMemoCancel = () => {
+    setShowMemoDialog(false);
+    setMemo('');
   };
 
   return (
@@ -199,6 +215,83 @@ export function ArticleModal({ article, onClose, onSpeak }: ArticleModalProps) {
             </motion.button>
           </div>
         </motion.div>
+
+        {/* Memo Dialog */}
+        {showMemoDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(4px)',
+            }}
+            onClick={handleMemoCancel}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="rounded-xl p-6 max-w-md w-full"
+              style={{
+                background: colors.bg.elevated,
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <StickyNote className="w-5 h-5" style={{ color: 'rgb(245, 158, 11)' }} />
+                <h3 className="text-lg font-bold" style={{ color: colors.fg.primary }}>
+                  북마크 메모 추가
+                </h3>
+              </div>
+              <p className="text-sm mb-4" style={{ color: colors.fg.tertiary }}>
+                이 조문에 대한 메모를 입력하세요 (선택사항)
+              </p>
+              <textarea
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                placeholder="예: 불법행위 책임, 계약 해제 관련 등..."
+                className="w-full px-4 py-3 rounded-lg border resize-none focus:outline-none focus:ring-2 transition-all"
+                style={{
+                  backgroundColor: colors.bg.primary,
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  color: colors.fg.primary,
+                  minHeight: '100px',
+                }}
+                autoFocus
+              />
+              <div className="flex gap-2 mt-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleMemoSubmit}
+                  className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    background: lawColor.primary,
+                    color: '#fff',
+                  }}
+                >
+                  저장
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleMemoCancel}
+                  className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                  style={{
+                    backgroundColor: colors.bg.tertiary,
+                    color: colors.fg.secondary,
+                  }}
+                >
+                  취소
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
     </AnimatePresence>
   );
