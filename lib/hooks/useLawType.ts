@@ -10,8 +10,9 @@ export function useScope() {
   // URL에서 scope 읽기
   useEffect(() => {
     const scopeParam = searchParams.get('scope');
-    if (scopeParam === 'all' || scopeParam === 'civil' || scopeParam === 'criminal') {
-      setScope(scopeParam);
+    const validScopes: Scope[] = ['all', 'civil', 'criminal', 'civil_procedure', 'criminal_procedure'];
+    if (scopeParam && validScopes.includes(scopeParam as Scope)) {
+      setScope(scopeParam as Scope);
     }
   }, [searchParams]);
 
